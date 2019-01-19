@@ -7,11 +7,20 @@
     tools:context=".MainActivity">
 
     <org.opencv.android.JavaCameraView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/myCameraView"
-        app:show_fps="true"
-        />
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:show_fps="true" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="370dp"
+        android:layout_height="242dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="4dp"
+        android:src="@drawable/ic_launcher_background" />
 
 
 </RelativeLayout>

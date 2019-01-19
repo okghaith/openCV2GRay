@@ -1,12 +1,12 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-8:12
-INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-8:12
-INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-8:12
-INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-8:12
-INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-8:12
-INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-8:12
-INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-8:12
+ADDED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-6:12
+INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-6:12
+INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-6:12
+INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-6:12
+INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-6:12
+INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-6:12
+INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:2:1-6:12
 	package
 		ADDED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml:3:7-27
 		INJECTED from C:\Users\kwt\Desktop\omaaaaaaaar\camera3\openCVLibrary320\src\main\AndroidManifest.xml
