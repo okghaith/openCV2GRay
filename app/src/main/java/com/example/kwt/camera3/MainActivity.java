@@ -18,9 +18,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     CameraBridgeViewBase cameraBridgeViewBase;
 
-    Mat mat1;
-   // Mat gray;
+    Mat mat1,mat2,mat3;
+    Mat Gray;
     BaseLoaderCallback baseLoaderCallback;
+
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -59,10 +60,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
         mat1 = inputFrame.rgba();
-//        Mat mRgbaT= mat1.t();
-//        Imgproc.resize(mRgbaT,mRgbaT,mat1.size());
-//        Imgproc.cvtColor(mRgbaT,gray,Imgproc.COLOR_RGB2GRAY);
-        return null;//mRgbaT;
+        Mat mRgba = mat1.t();
+        Core.flip(mat1.t(),mRgba,1);
+        Imgproc.resize(mRgba,mRgba,mat1.size());
+        Imgproc.cvtColor(mRgba,Gray,Imgproc.COLOR_RGB2GRAY);
+        return null;
     }
 
     @Override
@@ -73,8 +75,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public void onCameraViewStarted(int width, int height) {
         mat1 = new Mat(width,height,CvType.CV_8UC4);
-      //  gray = new Mat(width,height,CvType.CV_8SC1);
-
+        mat2 = new Mat(width,height,CvType.CV_8UC4);//remove
+        mat3 = new Mat(width,height,CvType.CV_8UC4);//remove
+        Gray = new Mat(width,height,CvType.CV_8SC1);
     }
 
     @Override
@@ -89,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     protected void onResume() {
+        super.onResume();
         super.onResume();
         if(!OpenCVLoader.initDebug())
         {
