@@ -1772,7 +1772,7 @@ public class Imgproc {
     }
 
     //javadoc: cvtColor(src, dst, code)
-    public static void cvtColor(Mat src, Mat dst, int colorRgb2gray)
+    public static void cvtColor(Mat src, Mat dst, int code)
     {
         
         cvtColor_1(src.nativeObj, dst.nativeObj, code);
