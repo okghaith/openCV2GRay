@@ -20,6 +20,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="211dp"
         android:layout_marginBottom="27dp"
+        android:rotation="90"
         android:src="@drawable/ic_launcher_background" />
 
     <ImageView
@@ -29,6 +30,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="12dp"
+        android:rotation="90"
         android:layout_marginBottom="22dp"
         android:src="@drawable/ic_launcher_background" />
 
