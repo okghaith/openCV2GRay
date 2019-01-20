@@ -127,7 +127,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
             public void run() {
 
                 Imgproc.cvtColor(mRgba, gray , Imgproc.COLOR_RGB2GRAY);
-                Imgproc.Canny(gray, canny, 51, 150);
+                Imgproc.Canny(gray, canny, 50, 150);
 
                 Utils.matToBitmap(gray, grayBitmap);
                 Utils.matToBitmap(canny,cannyBitmap);
