@@ -1141,7 +1141,6 @@ public class Imgproc {
         return;
     }
 
-
     //
     // C++:  void HuMoments(Moments m, Mat& hu)
     //

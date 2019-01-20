@@ -2,6 +2,7 @@ package com.example.kwt.camera3;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +20,8 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 
@@ -27,11 +30,14 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     private CameraBridgeViewBase mOpenCvCameraView;
     ImageView imageView_gray;
     ImageView imageView_canny;
+    ImageView imageView_hough;
     Bitmap grayBitmap;
     Bitmap cannyBitmap;
+    Bitmap houghBitmap;
     Mat mRgba;
     Mat gray;
     Mat canny;
+    Mat hough;
 
     //OpenCV Initialization
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -66,8 +72,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-        imageView_gray = findViewById(R.id.imageView);
-        imageView_canny = findViewById(R.id.imageView2);
+        imageView_gray = findViewById(R.id.imageView_gray);
+        imageView_canny = findViewById(R.id.imageView_canny);
+        imageView_hough = findViewById(R.id.imageView_hough);
     }
 
     @Override
@@ -107,10 +114,11 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     public void onCameraViewStarted(int width, int height) {
         grayBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
         cannyBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
+        houghBitmap =  Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
         mRgba = new Mat(width,height,CvType.CV_8UC4);
         gray = new Mat(width,height,CvType.CV_8SC1);
         canny = new Mat(width,height,CvType.CV_8SC1);
-
+        hough = new Mat(width,height,CvType.CV_8SC1);
     }
 
     public void onCameraViewStopped() {
@@ -121,24 +129,48 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         //Log.i(TAG, "Got New Frame!");
         mRgba = inputFrame.rgba();
 
-        runOnUiThread(new Runnable() {
+        Imgproc.cvtColor(mRgba, gray , Imgproc.COLOR_RGB2GRAY);
+        Imgproc.Canny(gray, canny, 50, 150);
 
+        hough = getHoughPTransform(canny,1, Math.PI / 180, 50, 5,50);
+
+        Utils.matToBitmap(gray, grayBitmap);
+        Utils.matToBitmap(canny,cannyBitmap);
+        Utils.matToBitmap(hough,houghBitmap);
+
+
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
 
-                Imgproc.cvtColor(mRgba, gray , Imgproc.COLOR_RGB2GRAY);
-                Imgproc.Canny(gray, canny, 50, 150);
-
-                Utils.matToBitmap(gray, grayBitmap);
-                Utils.matToBitmap(canny,cannyBitmap);
-
                 imageView_gray.setImageBitmap(grayBitmap);
                 imageView_canny.setImageBitmap(cannyBitmap);
+                imageView_hough.setImageBitmap(houghBitmap);
 
             }
         });
 
 
+        return mRgba;
+    }
+
+
+    public Mat getHoughPTransform(Mat image, double rho, double theta, int threshold, double minLineLength, double maxLineGap) {
+        Mat result = image.clone();
+        Mat lines = new Mat();
+
+
+        Imgproc.HoughLinesP(image, lines, rho, theta, threshold, minLineLength, maxLineGap);
+
+        Log.i(TAG, "lines.cols()" + lines.cols());
+
+        for (int i = 0; i < lines.cols(); i++) {
+            double[] val = lines.get(0, i);
+            if (val == null)
+                break;
+            Log.i(TAG, "val[0], val[1] val[2], val[3]" + val[0] +", "+ val[1]+", "+  val[2] +", "+  val[3]);
+            Imgproc.line(mRgba, new Point(val[0], val[1]), new Point(val[2], val[3]), new Scalar(0, 0, 255), 4);
+        }
         return mRgba;
     }
 
