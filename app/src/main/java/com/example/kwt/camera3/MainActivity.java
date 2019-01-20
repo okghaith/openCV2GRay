@@ -25,13 +25,13 @@ import org.opencv.imgproc.Imgproc;
 public class MainActivity extends Activity implements CvCameraViewListener2 {
     private static final String TAG = "MyActivity_OpenCVTest";
     private CameraBridgeViewBase mOpenCvCameraView;
-    ImageView imageview;
-    ImageView imageView_2;//new
+    ImageView imageView_gray;
+    ImageView imageView_canny;
     Bitmap grayBitmap;
-    Bitmap cannyBitmap;//new
+    Bitmap cannyBitmap;
     Mat mRgba;
     Mat gray;
-    Mat canny;//new
+    Mat canny;
 
     //OpenCV Initialization
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -66,8 +66,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-        imageview = findViewById(R.id.imageView);
-        imageView_2 = findViewById(R.id.imageView2);//new
+        imageView_gray = findViewById(R.id.imageView);
+        imageView_canny = findViewById(R.id.imageView2);
     }
 
     @Override
@@ -106,10 +106,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
     public void onCameraViewStarted(int width, int height) {
         grayBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
-        cannyBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);//new
+        cannyBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
         mRgba = new Mat(width,height,CvType.CV_8UC4);
         gray = new Mat(width,height,CvType.CV_8SC1);
-        canny = new Mat(width,height,CvType.CV_8SC1);//new
+        canny = new Mat(width,height,CvType.CV_8SC1);
 
     }
 
@@ -121,19 +121,19 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         //Log.i(TAG, "Got New Frame!");
         mRgba = inputFrame.rgba();
 
-        Imgproc.cvtColor(mRgba, gray , Imgproc.COLOR_RGB2GRAY);
-        Imgproc.Canny(gray, canny, 50, 150);//new
-
-        Utils.matToBitmap(gray, grayBitmap);
-        Utils.matToBitmap(canny,cannyBitmap);//new
-
         runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
 
-                imageview.setImageBitmap(grayBitmap);
-                imageView_2.setImageBitmap(cannyBitmap);//new
+                Imgproc.cvtColor(mRgba, gray , Imgproc.COLOR_RGB2GRAY);
+                Imgproc.Canny(gray, canny, 50, 150);
+
+                Utils.matToBitmap(gray, grayBitmap);
+                Utils.matToBitmap(canny,cannyBitmap);
+
+                imageView_gray.setImageBitmap(grayBitmap);
+                imageView_canny.setImageBitmap(cannyBitmap);
 
             }
         });
