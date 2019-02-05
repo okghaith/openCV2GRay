@@ -34,6 +34,17 @@
             android:layout_height="100dp" />
 
         <ImageView
+            android:id="@+id/imageView_Mask"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:rotation="90"
+            android:src="@mipmap/ic_launcher" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <ImageView
             android:id="@+id/imageView_canny"
             android:layout_width="match_parent"
             android:layout_height="200dp"
