@@ -1,64 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <org.opencv.android.JavaCameraView
-        android:id="@+id/myCameraView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp"
-        app:show_fps="true" />
 
-    <ImageView
-        android:id="@+id/imageView_canny"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="193dp"
-        android:layout_marginTop="31dp"
-        android:layout_marginEnd="19dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginBottom="330dp"
-        android:rotation="90"
-        android:src="@drawable/ic_launcher_background" />
+    <LinearLayout android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/imageView_hough"
-        android:layout_width="match_parent"
-        android:layout_height="230dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginBottom="22dp"
-        android:rotation="90"
-        android:src="@drawable/ic_launcher_background" />
+        <org.opencv.android.JavaCameraView
+            android:id="@+id/myCameraView"
+            android:layout_width="match_parent"
+            android:layout_height="231dp"
 
-    <ImageView
-        android:id="@+id/imageView_gray"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_alignEnd="@+id/imageView"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="19dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="189dp"
-        android:layout_marginBottom="329dp"
-        android:rotation="90"
-        android:src="@drawable/ic_launcher_background" />
+            app:show_fps="true" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <ImageView
+            android:id="@+id/imageView_gray"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:rotation="90"
+            android:src="@drawable/ic_launcher_background" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <ImageView
+            android:id="@+id/imageView_canny"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:rotation="90"
+            android:src="@drawable/ic_launcher_background" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Threshold 1" />
+
+        <SeekBar
+            android:id="@+id/seekBar1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="200" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Threshold 2" />
+
+        <SeekBar
+            android:id="@+id/seekBar2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="200" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <ImageView
+            android:id="@+id/imageView_hough"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:rotation="90"
+            android:src="@drawable/ic_launcher_background" />
 
 
-</RelativeLayout>
+    </LinearLayout>
+
+</ScrollView>

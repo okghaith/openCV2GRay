@@ -2,13 +2,15 @@ package com.example.kwt.camera3;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.media.Image;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -38,6 +40,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     Mat gray;
     Mat canny;
     Mat hough;
+
+    TextView text_canny_threshold1, text_canny_threshold2;
+    SeekBar seek_canny_threshold1, seek_canny_threshold2;
+    public int canny_threshold1, canny_threshold2;
 
     //OpenCV Initialization
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -75,6 +81,55 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         imageView_gray = findViewById(R.id.imageView_gray);
         imageView_canny = findViewById(R.id.imageView_canny);
         imageView_hough = findViewById(R.id.imageView_hough);
+
+        //Canny Seek bars
+        seek_canny_threshold1 =(SeekBar)this.findViewById(R.id.seekBar1);
+        seek_canny_threshold2 =(SeekBar)this.findViewById(R.id.seekBar2);
+
+        text_canny_threshold1 = (TextView) findViewById(R.id.textView1);
+        text_canny_threshold1.setText(seek_canny_threshold1.getProgress() + " / " + seek_canny_threshold1.getMax());
+
+        text_canny_threshold2 = (TextView) findViewById(R.id.textView2);
+        text_canny_threshold2.setText(seek_canny_threshold2.getProgress() + " / " + seek_canny_threshold2.getMax());
+
+
+        seek_canny_threshold1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                canny_threshold1 = progress;
+                text_canny_threshold1.setText(progress + " / " + seek_canny_threshold1.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        seek_canny_threshold2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                canny_threshold2 =progress;
+                text_canny_threshold2.setText(progress + " / " + seek_canny_threshold2.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+
+
+        });
+
     }
 
     @Override
@@ -130,7 +185,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         mRgba = inputFrame.rgba();
 
         Imgproc.cvtColor(mRgba, gray , Imgproc.COLOR_RGB2GRAY);
-        Imgproc.Canny(gray, canny, 50, 150);
+        Imgproc.Canny(gray, canny, canny_threshold1, canny_threshold2);
 
         hough = getHoughPTransform(canny,1, Math.PI / 180, 50, 5,50);
 
@@ -180,8 +235,10 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         return false;
     }
 
+
     /**
      * A native method that is implemented by the 'native-lib' native library,
+
      * which is packaged with this application.
      */
     public native String stringFromJNI();
