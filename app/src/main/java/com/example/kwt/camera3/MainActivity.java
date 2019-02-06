@@ -50,9 +50,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     Mat hough;
     Mat mask;
 
-    TextView text_canny_threshold1, text_canny_threshold2;
-    SeekBar seek_canny_threshold1, seek_canny_threshold2;
-    public int canny_threshold1, canny_threshold2;
+    TextView text_canny_threshold1, text_canny_threshold2, text_hough_threshold,text_hough_minLength,text_hough_maxGap;
+    SeekBar seek_canny_threshold1, seek_canny_threshold2, seek_hough_threshold,seek_hough_minLength,seek_hough_maxGap;
+    public int canny_threshold1, canny_threshold2, hough_threshold,hough_minLength,hough_maxGap;
 
     //OpenCV Initialization
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -96,10 +96,80 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         cannySeekBars();
 
         //HoughLineP Seekbars
-
+        houghLinePSeekbars();
+        
         //Mask
         imageView_mask = findViewById(R.id.imageView_Mask);
 
+    }
+
+    private void houghLinePSeekbars() {
+        seek_hough_threshold = (SeekBar)this.findViewById(R.id.seekBar3);
+        seek_hough_minLength = (SeekBar)this.findViewById(R.id.seekBar4);
+        seek_hough_maxGap = (SeekBar)this.findViewById(R.id.seekBar5);
+
+        text_hough_threshold=(TextView)findViewById(R.id.textView3);
+        text_hough_threshold.setText(seek_hough_threshold.getProgress() + " / " + seek_hough_threshold.getMax());
+
+        text_hough_minLength=(TextView)findViewById(R.id.textView4);
+        text_hough_minLength.setText(seek_hough_minLength.getProgress() + " / " + seek_hough_minLength.getMax());
+
+        text_hough_maxGap=(TextView)findViewById(R.id.textView5);
+        text_hough_maxGap.setText(seek_hough_maxGap.getProgress() + " / " + seek_hough_maxGap.getMax());
+
+        seek_hough_threshold.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                hough_threshold = progress;
+                text_hough_threshold.setText(progress + " / " + seek_hough_threshold.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        seek_hough_minLength.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                hough_minLength = progress;
+                text_hough_minLength.setText(progress + " / " + seek_hough_minLength.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        seek_hough_maxGap.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                hough_maxGap = progress;
+                text_hough_maxGap.setText(progress + " / " + seek_hough_maxGap.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     private void cannySeekBars() {
