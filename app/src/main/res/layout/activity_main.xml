@@ -34,6 +34,17 @@
             android:layout_height="100dp" />
 
         <ImageView
+            android:id="@+id/imageView_Mask"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:rotation="90"
+            android:src="@mipmap/ic_launcher" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <ImageView
             android:id="@+id/imageView_canny"
             android:layout_width="match_parent"
             android:layout_height="200dp"
@@ -74,6 +85,42 @@
             android:layout_height="200dp"
             android:rotation="90"
             android:src="@drawable/ic_launcher_background" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="hough_Threshold" />
+
+        <SeekBar
+            android:id="@+id/seekBar3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="200" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="minLineLengthval" />
+
+        <SeekBar
+            android:id="@+id/seekBar4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="200" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="maxLineGapVal" />
+
+        <SeekBar
+            android:id="@+id/seekBar5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="200" />
 
 
     </LinearLayout>

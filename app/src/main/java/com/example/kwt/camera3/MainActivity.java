@@ -22,9 +22,15 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.opencv.imgproc.Imgproc.fillConvexPoly;
 
 
 public class MainActivity extends Activity implements CvCameraViewListener2 {
@@ -33,17 +39,20 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     ImageView imageView_gray;
     ImageView imageView_canny;
     ImageView imageView_hough;
+    ImageView imageView_mask;
     Bitmap grayBitmap;
     Bitmap cannyBitmap;
     Bitmap houghBitmap;
+    Bitmap maskBitmap;
     Mat mRgba;
     Mat gray;
     Mat canny;
     Mat hough;
+    Mat mask;
 
-    TextView text_canny_threshold1, text_canny_threshold2;
-    SeekBar seek_canny_threshold1, seek_canny_threshold2;
-    public int canny_threshold1, canny_threshold2;
+    TextView text_canny_threshold1, text_canny_threshold2, text_hough_threshold,text_hough_minLength,text_hough_maxGap;
+    SeekBar seek_canny_threshold1, seek_canny_threshold2, seek_hough_threshold,seek_hough_minLength,seek_hough_maxGap;
+    public int canny_threshold1, canny_threshold2, hough_threshold,hough_minLength,hough_maxGap;
 
     //OpenCV Initialization
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -67,6 +76,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         System.loadLibrary("native-lib");
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +93,86 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         imageView_hough = findViewById(R.id.imageView_hough);
 
         //Canny Seek bars
+        cannySeekBars();
+
+        //HoughLineP Seekbars
+        houghLinePSeekbars();
+        
+        //Mask
+        imageView_mask = findViewById(R.id.imageView_Mask);
+
+    }
+
+    private void houghLinePSeekbars() {
+        seek_hough_threshold = (SeekBar)this.findViewById(R.id.seekBar3);
+        seek_hough_minLength = (SeekBar)this.findViewById(R.id.seekBar4);
+        seek_hough_maxGap = (SeekBar)this.findViewById(R.id.seekBar5);
+
+        text_hough_threshold=(TextView)findViewById(R.id.textView3);
+        text_hough_threshold.setText(seek_hough_threshold.getProgress() + " / " + seek_hough_threshold.getMax());
+
+        text_hough_minLength=(TextView)findViewById(R.id.textView4);
+        text_hough_minLength.setText(seek_hough_minLength.getProgress() + " / " + seek_hough_minLength.getMax());
+
+        text_hough_maxGap=(TextView)findViewById(R.id.textView5);
+        text_hough_maxGap.setText(seek_hough_maxGap.getProgress() + " / " + seek_hough_maxGap.getMax());
+
+        seek_hough_threshold.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                hough_threshold = progress;
+                text_hough_threshold.setText(progress + " / " + seek_hough_threshold.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        seek_hough_minLength.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                hough_minLength = progress;
+                text_hough_minLength.setText(progress + " / " + seek_hough_minLength.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        seek_hough_maxGap.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                hough_maxGap = progress;
+                text_hough_maxGap.setText(progress + " / " + seek_hough_maxGap.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+
+    private void cannySeekBars() {
         seek_canny_threshold1 =(SeekBar)this.findViewById(R.id.seekBar1);
         seek_canny_threshold2 =(SeekBar)this.findViewById(R.id.seekBar2);
 
@@ -126,10 +216,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
             public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
-
-
         });
-
     }
 
     @Override
@@ -170,10 +257,13 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         grayBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
         cannyBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
         houghBitmap =  Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
+        maskBitmap =   Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
+
         mRgba = new Mat(width,height,CvType.CV_8UC4);
         gray = new Mat(width,height,CvType.CV_8SC1);
         canny = new Mat(width,height,CvType.CV_8SC1);
         hough = new Mat(width,height,CvType.CV_8SC1);
+        mask  = Mat.zeros(width, height, CvType.CV_8UC3); //new Mat(width, height, CvType.CV_8SC1, new Scalar(0));
     }
 
     public void onCameraViewStopped() {
@@ -189,9 +279,23 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
         hough = getHoughPTransform(canny,1, Math.PI / 180, 50, 5,50);
 
+//        List<Point> cropMaskArray = new ArrayList<>();
+//        cropMaskArray.add(new Point(197, 154));
+//        cropMaskArray.add(new Point(190, 115));
+//        cropMaskArray.add(new Point(197, 133));
+//        org.opencv.core.Point [] pointArray = new org.opencv.core.Point[cropMaskArray.size()];
+//        Point pt;
+//        for(int i = 0; i < cropMaskArray.size(); i++){
+//            pt = cropMaskArray.get(i);
+//            pointArray[i] = new org.opencv.core.Point(pt.x, pt.y);
+//        }
+//        MatOfPoint points = new MatOfPoint(pointArray);
+//        fillConvexPoly(mask, points, new Scalar(255, 255, 255));
+
         Utils.matToBitmap(gray, grayBitmap);
         Utils.matToBitmap(canny,cannyBitmap);
         Utils.matToBitmap(hough,houghBitmap);
+     //   Utils.matToBitmap(mask,maskBitmap);
 
 
         runOnUiThread(new Runnable() {
@@ -201,6 +305,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
                 imageView_gray.setImageBitmap(grayBitmap);
                 imageView_canny.setImageBitmap(cannyBitmap);
                 imageView_hough.setImageBitmap(houghBitmap);
+                imageView_mask.setImageBitmap(maskBitmap);
 
             }
         });
