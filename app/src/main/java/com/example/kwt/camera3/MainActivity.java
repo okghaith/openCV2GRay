@@ -2,7 +2,9 @@ package com.example.kwt.camera3;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -27,6 +29,8 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,9 +101,30 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
         //HoughLineP Seekbars
         houghLinePSeekbars();
-        
+
         //Mask
         imageView_mask = findViewById(R.id.imageView_Mask);
+
+        //upload black pic
+        InputStream stream = null;
+
+        Uri uri = Uri.parse("android.resource://" + getPackageName() +"/"+ R.drawable.black_image);
+        try {
+            stream = getContentResolver().openInputStream(uri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+        bmpFactoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
+
+        Bitmap bmp = BitmapFactory.decodeStream(stream, null, bmpFactoryOptions);
+        imageView_mask.setImageBitmap(bmp);
+
+//        mask  = new Mat(640,360,CvType.CV_8SC1);
+//        maskBitmap =   Bitmap.createBitmap(640,360,Bitmap.Config.RGB_565);
+//
+//        Utils.bitmapToMat(bmp, mask);
 
     }
 
@@ -263,7 +288,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         gray = new Mat(width,height,CvType.CV_8SC1);
         canny = new Mat(width,height,CvType.CV_8SC1);
         hough = new Mat(width,height,CvType.CV_8SC1);
-        mask  = Mat.zeros(width, height, CvType.CV_8UC3); //new Mat(width, height, CvType.CV_8SC1, new Scalar(0));
+        mask  = new Mat(width,height,CvType.CV_8SC1);//Mat.zeros(width, height, CvType.CV_8UC3); //new Mat(width, height, CvType.CV_8SC1, new Scalar(0));
     }
 
     public void onCameraViewStopped() {
@@ -278,7 +303,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         Imgproc.Canny(gray, canny, canny_threshold1, canny_threshold2);
 
         hough = getHoughPTransform(canny,1, Math.PI / 180, 50, 5,50);
-
+//
 //        List<Point> cropMaskArray = new ArrayList<>();
 //        cropMaskArray.add(new Point(197, 154));
 //        cropMaskArray.add(new Point(190, 115));
@@ -295,7 +320,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         Utils.matToBitmap(gray, grayBitmap);
         Utils.matToBitmap(canny,cannyBitmap);
         Utils.matToBitmap(hough,houghBitmap);
-     //   Utils.matToBitmap(mask,maskBitmap);
+//        Utils.matToBitmap(mask,maskBitmap);
 
 
         runOnUiThread(new Runnable() {
@@ -305,7 +330,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
                 imageView_gray.setImageBitmap(grayBitmap);
                 imageView_canny.setImageBitmap(cannyBitmap);
                 imageView_hough.setImageBitmap(houghBitmap);
-                imageView_mask.setImageBitmap(maskBitmap);
+//                imageView_mask.setImageBitmap(maskBitmap);
 
             }
         });
