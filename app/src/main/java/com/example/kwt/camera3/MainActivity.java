@@ -45,6 +45,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     ImageView imageView_canny;
     ImageView imageView_hough;
     ImageView imageView_mask;
+    ImageView imageView_maskCanny;
     Bitmap grayBitmap;
     Bitmap cannyBitmap;
     Bitmap houghBitmap;
@@ -102,6 +103,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         imageView_gray = findViewById(R.id.imageView_gray);
         imageView_canny = findViewById(R.id.imageView_canny);
         imageView_hough = findViewById(R.id.imageView_hough);
+        imageView_mask = findViewById(R.id.imageView_Mask);
+        imageView_maskCanny = findViewById(R.id.imageView_maskCanny);
 
         //Canny Seek bars
         cannySeekBars();
@@ -109,8 +112,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         //HoughLineP Seekbars
         houghLinePSeekbars();
 
-        //Mask
-        imageView_mask = findViewById(R.id.imageView_Mask);
 
         //upload black pic
         InputStream stream = null;
@@ -315,8 +316,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         Imgproc.cvtColor(mRgba, gray , Imgproc.COLOR_RGB2GRAY);
         Imgproc.Canny(gray, canny, canny_threshold1, canny_threshold2);
 
-        hough = getHoughPTransform(canny,1, Math.PI / 180, hough_threshold, hough_minLength,hough_maxGap);
-
         List<Point> cropMaskArray = new ArrayList<>();
         cropMaskArray.add(new Point(100, 360));
         cropMaskArray.add(new Point(320, 180));
@@ -333,6 +332,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
         Core.bitwise_and(canny, mask, masked_canny);//mask should be just 1 channel
 
+        hough = getHoughPTransform(masked_canny,1, Math.PI / 180, hough_threshold, hough_minLength,hough_maxGap);
+
         //H:360XW:640
         Utils.matToBitmap(gray, grayBitmap);
         Utils.matToBitmap(canny,cannyBitmap);
@@ -348,7 +349,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
                 imageView_gray.setImageBitmap(grayBitmap);
                 imageView_canny.setImageBitmap(cannyBitmap);
                 imageView_hough.setImageBitmap(houghBitmap);
-                imageView_mask.setImageBitmap(masked_cannyBitmap);
+                imageView_mask.setImageBitmap(maskBitmap);
+                imageView_maskCanny.setImageBitmap(masked_cannyBitmap);
 
             }
         });
