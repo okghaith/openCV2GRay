@@ -302,7 +302,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         Imgproc.cvtColor(mRgba, gray , Imgproc.COLOR_RGB2GRAY);
         Imgproc.Canny(gray, canny, canny_threshold1, canny_threshold2);
 
-        hough = getHoughPTransform(canny,1, Math.PI / 180, 50, 5,50);
+        hough = getHoughPTransform(canny,1, Math.PI / 180, hough_threshold, hough_minLength,hough_maxGap);
 //
 //        List<Point> cropMaskArray = new ArrayList<>();
 //        cropMaskArray.add(new Point(197, 154));
