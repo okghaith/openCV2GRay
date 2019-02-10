@@ -57,6 +57,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     TextView text_canny_threshold1, text_canny_threshold2, text_hough_threshold,text_hough_minLength,text_hough_maxGap;
     SeekBar seek_canny_threshold1, seek_canny_threshold2, seek_hough_threshold,seek_hough_minLength,seek_hough_maxGap;
     public int canny_threshold1, canny_threshold2, hough_threshold,hough_minLength,hough_maxGap;
+    private Bitmap bmp;
 
     //OpenCV Initialization
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -79,6 +80,8 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     static {
         System.loadLibrary("native-lib");
     }
+
+
 
 
     @Override
@@ -108,7 +111,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         //upload black pic
         InputStream stream = null;
 
-        Uri uri = Uri.parse("android.resource://" + getPackageName() +"/"+ R.drawable.black_image);
+        Uri uri = Uri.parse("android.resource://" + getPackageName() +"/"+ R.drawable.black_640_360);
         try {
             stream = getContentResolver().openInputStream(uri);
         } catch (FileNotFoundException e) {
@@ -117,14 +120,14 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
         BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
         bmpFactoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
-
-        Bitmap bmp = BitmapFactory.decodeStream(stream, null, bmpFactoryOptions);
-        imageView_mask.setImageBitmap(bmp);
+        //H:360,W:640
+        bmp = BitmapFactory.decodeStream(stream, null, bmpFactoryOptions);
+//        imageView_mask.setImageBitmap(bmp);
 
 //        mask  = new Mat(640,360,CvType.CV_8SC1);
 //        maskBitmap =   Bitmap.createBitmap(640,360,Bitmap.Config.RGB_565);
 //
-//        Utils.bitmapToMat(bmp, mask);
+
 
     }
 
@@ -279,6 +282,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
 
     public void onCameraViewStarted(int width, int height) {
+        //H360:,W:640
         grayBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
         cannyBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
         houghBitmap =  Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
@@ -288,7 +292,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         gray = new Mat(width,height,CvType.CV_8SC1);
         canny = new Mat(width,height,CvType.CV_8SC1);
         hough = new Mat(width,height,CvType.CV_8SC1);
-        mask  = new Mat(width,height,CvType.CV_8SC1);//Mat.zeros(width, height, CvType.CV_8UC3); //new Mat(width, height, CvType.CV_8SC1, new Scalar(0));
+        mask  = new Mat(640,360,CvType.CV_8SC1);
+        Utils.bitmapToMat(bmp, mask);
+        //mask  = new Mat(width,height,CvType.CV_8SC1);//Mat.zeros(width, height, CvType.CV_8UC3); //new Mat(width, height, CvType.CV_8SC1, new Scalar(0));
     }
 
     public void onCameraViewStopped() {
@@ -303,24 +309,25 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         Imgproc.Canny(gray, canny, canny_threshold1, canny_threshold2);
 
         hough = getHoughPTransform(canny,1, Math.PI / 180, hough_threshold, hough_minLength,hough_maxGap);
-//
-//        List<Point> cropMaskArray = new ArrayList<>();
-//        cropMaskArray.add(new Point(197, 154));
-//        cropMaskArray.add(new Point(190, 115));
-//        cropMaskArray.add(new Point(197, 133));
-//        org.opencv.core.Point [] pointArray = new org.opencv.core.Point[cropMaskArray.size()];
-//        Point pt;
-//        for(int i = 0; i < cropMaskArray.size(); i++){
-//            pt = cropMaskArray.get(i);
-//            pointArray[i] = new org.opencv.core.Point(pt.x, pt.y);
-//        }
-//        MatOfPoint points = new MatOfPoint(pointArray);
-//        fillConvexPoly(mask, points, new Scalar(255, 255, 255));
 
+        List<Point> cropMaskArray = new ArrayList<>();
+        cropMaskArray.add(new Point(297, 354));
+        cropMaskArray.add(new Point(290, 315));
+        cropMaskArray.add(new Point(297, 333));
+        org.opencv.core.Point [] pointArray = new org.opencv.core.Point[cropMaskArray.size()];
+        Point pt;
+        for(int i = 0; i < cropMaskArray.size(); i++){
+            pt = cropMaskArray.get(i);
+            pointArray[i] = new org.opencv.core.Point(pt.x, pt.y);
+        }
+        MatOfPoint points = new MatOfPoint(pointArray);
+        fillConvexPoly(mask, points, new Scalar(255, 255, 255));
+
+        //H:360XW:640
         Utils.matToBitmap(gray, grayBitmap);
         Utils.matToBitmap(canny,cannyBitmap);
         Utils.matToBitmap(hough,houghBitmap);
-//        Utils.matToBitmap(mask,maskBitmap);
+        Utils.matToBitmap(mask,maskBitmap);
 
 
         runOnUiThread(new Runnable() {
@@ -330,7 +337,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
                 imageView_gray.setImageBitmap(grayBitmap);
                 imageView_canny.setImageBitmap(cannyBitmap);
                 imageView_hough.setImageBitmap(houghBitmap);
-//                imageView_mask.setImageBitmap(maskBitmap);
+                imageView_mask.setImageBitmap(maskBitmap);
 
             }
         });
