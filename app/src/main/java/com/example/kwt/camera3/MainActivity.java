@@ -311,9 +311,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         hough = getHoughPTransform(canny,1, Math.PI / 180, hough_threshold, hough_minLength,hough_maxGap);
 
         List<Point> cropMaskArray = new ArrayList<>();
-        cropMaskArray.add(new Point(50, 50));
-        //cropMaskArray.add(new Point(290, 315));
-        //cropMaskArray.add(new Point(297, 333));
+        cropMaskArray.add(new Point(100, 360));
+        cropMaskArray.add(new Point(320, 180));
+        cropMaskArray.add(new Point(540, 360));
         org.opencv.core.Point [] pointArray = new org.opencv.core.Point[cropMaskArray.size()];
         Point pt;
         for(int i = 0; i < cropMaskArray.size(); i++){
