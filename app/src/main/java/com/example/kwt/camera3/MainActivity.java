@@ -1,17 +1,13 @@
 package com.example.kwt.camera3;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -53,19 +49,26 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     private static final String TAG = "MyActivity_OpenCVTest";
     private CameraBridgeViewBase mOpenCvCameraView;
 
+    //Sensors
     private SensorManager sensorManger;
     Sensor accelerometer;
+    int accelServiceFlag = 1;
 
+    //ImageViews
     ImageView imageView_gray;
     ImageView imageView_canny;
     ImageView imageView_hough;
     ImageView imageView_mask;
     ImageView imageView_maskCanny;
+
+    //Bitmap vars
     Bitmap grayBitmap;
     Bitmap cannyBitmap;
     Bitmap houghBitmap;
     Bitmap maskBitmap;
     Bitmap masked_cannyBitmap;
+
+    //OpenCV vars
     Mat mRgba;
     Mat gray;
     Mat canny;
@@ -73,14 +76,15 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     Mat mask;
     Mat masked_canny;
 
+    //TextViews
+    TextView textXval, textYval, textZval, textLongLat;
 
-    TextView xValue, yValue, zValue, LongLat ;
-    int flag = 1;
 
+    //Seekbar variables
     TextView text_canny_threshold1, text_canny_threshold2, text_hough_threshold,text_hough_minLength,text_hough_maxGap,text_poly_point1,text_poly_point2,text_poly_point3;
     SeekBar seek_canny_threshold1, seek_canny_threshold2, seek_hough_threshold,seek_hough_minLength,seek_hough_maxGap,seek_poly_point1,seek_poly_point2,seek_poly_point3;
     public int canny_threshold1, canny_threshold2, hough_threshold,hough_minLength,hough_maxGap;
-    private Bitmap bmp;
+    private Bitmap bmpBlack;
 
 
     //OpenCV Initialization
@@ -106,17 +110,16 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.i(TAG, "called onCreate");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        //Set OpenCV View Visibility and Listener
         mOpenCvCameraView = findViewById(R.id.myCameraView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-
         mOpenCvCameraView.setCvCameraViewListener(this);
 
         imageView_gray = findViewById(R.id.imageView_gray);
@@ -125,83 +128,80 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         imageView_mask = findViewById(R.id.imageView_Mask);
         imageView_maskCanny = findViewById(R.id.imageView_maskCanny);
 
+
         //Canny Seek bars
         cannySeekBars();
 
         //HoughLineP Seekbars
         houghLinePSeekbars();
 
+        //Import Black Image and Convert to Bmp
+        blackImgInit();
 
+        //Initialize textViews + Register Broadcast Receiver
+        accelInit();
+
+    }
+
+    private void blackImgInit() {
         //upload black pic
         InputStream stream = null;
-
         Uri uri = Uri.parse("android.resource://" + getPackageName() +"/"+ R.drawable.black_640_360);
         try {
             stream = getContentResolver().openInputStream(uri);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
         BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
         bmpFactoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
         //H:360,W:640
-        bmp = BitmapFactory.decodeStream(stream, null, bmpFactoryOptions);
-//        imageView_mask.setImageBitmap(bmp);
+        bmpBlack = BitmapFactory.decodeStream(stream, null, bmpFactoryOptions);
+    }
 
-//        mask  = new Mat(640,360,CvType.CV_8SC1);
-//        maskBitmap =   Bitmap.createBitmap(640,360,Bitmap.Config.RGB_565);
-//
-        xValue=(TextView)findViewById(R.id.xValue);
-        yValue=(TextView)findViewById(R.id.yValue);
-        zValue=(TextView)findViewById(R.id.zValue);
-        LongLat = (TextView) findViewById(R.id.LongLat);
+    private void accelInit() {
 
+        //Accel textviews
+        textXval =(TextView)findViewById(R.id.xValue);
+        textYval =(TextView)findViewById(R.id.yValue);
+        textZval =(TextView)findViewById(R.id.zValue);
+        textLongLat = (TextView) findViewById(R.id.LongLat);
+
+        //Receives X,Y,Z values from ShakerListener broadcast
         BroadcastReceiver sensorXYZUpdate = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                xValue.setText("xValue: " +  intent.getExtras().getFloat("xValue"));
-                yValue.setText("yValue: " +   intent.getExtras().getFloat("yValue"));
-                zValue.setText("zValue: " +  intent.getExtras().getFloat("zValue"));
+                textXval.setText("textXval: " +  intent.getExtras().getFloat("textXval"));
+                textYval.setText("textYval: " +   intent.getExtras().getFloat("textYval"));
+                textZval.setText("textZval: " +  intent.getExtras().getFloat("textZval"));
 
             }
         };
 
-
+        //Register listener to XYZDATA Intent Broadcast
         registerReceiver(sensorXYZUpdate, new IntentFilter("com.example.kwt.accelerometer.XYZDATA"));
 
 
-        //   Log.d(TAG, "onCreate: Initializing Sensor Services");
-        // sensorManger = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-
-        //accelerometer = sensorManger.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        //sensorManger.registerListener(MainActivity.this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        //Log.d(TAG, "onCreate: Registered accelerometer listner");
-
         final Button serviceB=(Button)findViewById(R.id.serviceB);
-        flag=1;
+        accelServiceFlag =1;
         serviceB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (flag == 1) {
+                if (accelServiceFlag == 1) {
                     Toast.makeText(MainActivity.this, "ACTIVATED!", Toast.LENGTH_LONG).show();
                     Log.d("MSG", "Activated the Service");
                     startService(new Intent(getApplicationContext(), ShakeService.class));
-                    flag = 0;
+                    accelServiceFlag = 0;
                 } else {
                     Toast.makeText(MainActivity.this, "DEACTIVATED!", Toast.LENGTH_LONG).show();
                     stopService(new Intent(getApplicationContext(), ShakeService.class));
                     Log.d("MSG", "Deactivated the Service");
-                    flag = 1;
+                    accelServiceFlag = 1;
                 }
 
             }
         });
-
-
-
     }
-
 
     private void houghLinePSeekbars() {
         seek_hough_threshold = (SeekBar)this.findViewById(R.id.seekBar3);
@@ -328,7 +328,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         }
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -342,7 +341,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         }
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -351,7 +349,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             mOpenCvCameraView.disableView();
         }
     }
-
 
     public void onCameraViewStarted(int width, int height) {
         //H360:,W:640
@@ -367,9 +364,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         hough = new Mat(width,height,CvType.CV_8SC1);
         masked_canny =  new Mat(width,height,CvType.CV_8SC1);
         mask  = new Mat(width,height,CvType.CV_8SC1);
-        Utils.bitmapToMat(bmp, mask);
+        Utils.bitmapToMat(bmpBlack, mask);
         Imgproc.cvtColor(mask, mask , Imgproc.COLOR_RGB2GRAY); // from 3 channels to 1 channel
-        //mask  = new Mat(width,height,CvType.CV_8SC1);//Mat.zeros(width, height, CvType.CV_8UC3); //new Mat(width, height, CvType.CV_8SC1, new Scalar(0));
+
     }
 
     public void onCameraViewStopped() {
@@ -418,7 +415,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
                 imageView_hough.setImageBitmap(houghBitmap);
                 imageView_mask.setImageBitmap(maskBitmap);
                 imageView_maskCanny.setImageBitmap(masked_cannyBitmap);
-
             }
         });
 
@@ -428,22 +424,108 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
 
     public Mat getHoughPTransform(Mat image, double rho, double theta, int threshold, double minLineLength, double maxLineGap) {
-        Mat result = image.clone();
         Mat lines = new Mat();
 
-
+        //Calculate Lines
         Imgproc.HoughLinesP(image, lines, rho, theta, threshold, minLineLength, maxLineGap);
 
-        Log.i(TAG, "lines.cols()" + lines.cols());
+        average_slope_intercept(image, lines);
+
+        //Log.i(TAG, "lines.cols()" + lines.cols());
 
         for (int i = 0; i < lines.cols(); i++) {
             double[] val = lines.get(0, i);
             if (val == null)
                 break;
-            Log.i(TAG, "val[0], val[1] val[2], val[3]" + val[0] +", "+ val[1]+", "+  val[2] +", "+  val[3]);
+           // Log.i(TAG, "val[0], val[1] val[2], val[3]" + val[0] +", "+ val[1]+", "+  val[2] +", "+  val[3]);
             Imgproc.line(mRgba, new Point(val[0], val[1]), new Point(val[2], val[3]), new Scalar(0, 0, 255), 4);
         }
         return mRgba;
+    }
+
+    private void average_slope_intercept(Mat image, Mat lines) {
+
+        //because of the inverse cartesian coordinate, lines on the left will
+        //have negative slope and lines on right positive slope
+        List<Point> left_fit  = new ArrayList<>();
+        List<Point> right_fit  = new ArrayList<>();
+
+        for (int i = 0; i < lines.cols(); i++) {
+            double[] twoPoints = lines.get(0, i);
+
+            double[] parameters  = polyFit_getSlopeIntercept(twoPoints);
+            double slope = parameters[0];
+            double intercept = parameters[1];
+
+            Log.i(TAG, "X^0 = " + intercept + "\n");
+            Log.i(TAG, "X^1 = " + slope + "\n");
+
+        }
+        //cropMaskArray.add(new Point(100, 360));
+
+    }
+
+    // From: https://www.bragitoff.com/2017/04/polynomial-fitting-java-codeprogram-works-android-well/
+    private double[] polyFit_getSlopeIntercept(double[] twoPoints){
+
+        System.out.print("polyfit Run\n");
+/*
+
+        double[] x = {twoPoints[0],twoPoints[2]};        //array to store x-axis data points
+        double[] y = {twoPoints[1],twoPoints[3]};         //array to store y-axis data points
+*/
+
+
+        double[] x= {1,3};        //array to store x-axis data points
+        double[] y= {2,4};         //array to store y-axis data points
+
+
+        int n = 1;                       //degree of polynomial to fit the data
+        int N = 2 ;                       //no. of data points
+
+        double X[] = new double[2 * n + 1];
+        for (int i = 0; i < 2 * n + 1; i++) {
+            X[i] = 0;
+            for (int j = 0; j < N; j++)
+                X[i] = X[i] + Math.pow(x[j], i);        //consecutive positions of the array will store N,sigma(xi),sigma(xi^2),sigma(xi^3)....sigma(xi^2n)
+        }
+        double B[][] = new double[n + 1][n + 2], a[] = new double[n + 1];            //B is the Normal matrix(augmented) that will store the equations, 'a' is for value of the final coefficients
+        for (int i = 0; i <= n; i++)
+            for (int j = 0; j <= n; j++)
+                B[i][j] = X[i + j];            //Build the Normal matrix by storing the corresponding coefficients at the right positions except the last column of the matrix
+        double Y[] = new double[n + 1];                    //Array to store the values of sigma(yi),sigma(xi*yi),sigma(xi^2*yi)...sigma(xi^n*yi)
+        for (int i = 0; i < n + 1; i++) {
+            Y[i] = 0;
+            for (int j = 0; j < N; j++)
+                Y[i] = Y[i] + Math.pow(x[j], i) * y[j];        //consecutive positions will store sigma(yi),sigma(xi*yi),sigma(xi^2*yi)...sigma(xi^n*yi)
+        }
+        for (int i = 0; i <= n; i++)
+            B[i][n + 1] = Y[i];                //load the values of Y as the last column of B(Normal Matrix but augmented)
+        n = n + 1;
+        for (int i = 0; i < n; i++)                    //From now Gaussian Elimination starts(can be ignored) to solve the set of linear equations (Pivotisation)
+            for (int k = i + 1; k < n; k++)
+                if (B[i][i] < B[k][i])
+                    for (int j = 0; j <= n; j++) {
+                        double temp = B[i][j];
+                        B[i][j] = B[k][j];
+                        B[k][j] = temp;
+                    }
+
+        for (int i = 0; i < n - 1; i++)            //loop to perform the gauss elimination
+            for (int k = i + 1; k < n; k++) {
+                double t = B[k][i] / B[i][i];
+                for (int j = 0; j <= n; j++)
+                    B[k][j] = B[k][j] - t * B[i][j];    //make the elements below the pivot elements equal to zero or elimnate the variables
+            }
+        for (int i = n - 1; i >= 0; i--)                //back-substitution
+        {                        //x is an array whose values correspond to the values of x,y,z..
+            a[i] = B[i][n];                //make the variable to be calculated equal to the rhs of the last equation
+            for (int j = 0; j < n; j++)
+                if (j != i)            //then subtract all the lhs values except the coefficient of the variable whose value                                   is being calculated
+                    a[i] = a[i] - B[i][j] * a[j];
+            a[i] = a[i] / B[i][i];            //now finally divide the rhs by the coefficient of the variable to be calculated
+        }
+        return a;
     }
 
     @Override
@@ -452,20 +534,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         return false;
     }
 
-    /* @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        Log.d(TAG, "onSensorChanged: X: " + sensorEvent.values[0] +" Y: " +sensorEvent.values[1] + " Z: " +sensorEvent.values[2]);
-
-        xValue.setText("xValue: " + sensorEvent.values[0]);
-        yValue.setText("yValue: " + sensorEvent.values[1]);
-        zValue.setText("zValue: " + sensorEvent.values[2]);
-
-    }*/
 
     /**
      * A native method that is implemented by the 'native-lib' native library,
