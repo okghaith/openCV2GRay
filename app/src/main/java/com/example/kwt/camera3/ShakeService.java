@@ -1,4 +1,4 @@
-package com.example.kwt.accelerometer;
+package com.example.kwt.camera3;
 
 import android.app.Service;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.os.Vibrator;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 

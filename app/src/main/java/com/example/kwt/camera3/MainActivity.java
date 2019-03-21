@@ -1,15 +1,26 @@
 package com.example.kwt.camera3;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -38,9 +49,13 @@ import java.util.List;
 import static org.opencv.imgproc.Imgproc.fillConvexPoly;
 
 
-public class MainActivity extends Activity implements CvCameraViewListener2 {
+public class MainActivity extends AppCompatActivity implements CvCameraViewListener2 {
     private static final String TAG = "MyActivity_OpenCVTest";
     private CameraBridgeViewBase mOpenCvCameraView;
+
+    private SensorManager sensorManger;
+    Sensor accelerometer;
+
     ImageView imageView_gray;
     ImageView imageView_canny;
     ImageView imageView_hough;
@@ -58,8 +73,12 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     Mat mask;
     Mat masked_canny;
 
-    TextView text_canny_threshold1, text_canny_threshold2, text_hough_threshold,text_hough_minLength,text_hough_maxGap;
-    SeekBar seek_canny_threshold1, seek_canny_threshold2, seek_hough_threshold,seek_hough_minLength,seek_hough_maxGap;
+
+    TextView xValue, yValue, zValue, LongLat ;
+    int flag = 1;
+
+    TextView text_canny_threshold1, text_canny_threshold2, text_hough_threshold,text_hough_minLength,text_hough_maxGap,text_poly_point1,text_poly_point2,text_poly_point3;
+    SeekBar seek_canny_threshold1, seek_canny_threshold2, seek_hough_threshold,seek_hough_minLength,seek_hough_maxGap,seek_poly_point1,seek_poly_point2,seek_poly_point3;
     public int canny_threshold1, canny_threshold2, hough_threshold,hough_minLength,hough_maxGap;
     private Bitmap bmp;
 
@@ -132,9 +151,57 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 //        mask  = new Mat(640,360,CvType.CV_8SC1);
 //        maskBitmap =   Bitmap.createBitmap(640,360,Bitmap.Config.RGB_565);
 //
+        xValue=(TextView)findViewById(R.id.xValue);
+        yValue=(TextView)findViewById(R.id.yValue);
+        zValue=(TextView)findViewById(R.id.zValue);
+        LongLat = (TextView) findViewById(R.id.LongLat);
+
+        BroadcastReceiver sensorXYZUpdate = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                xValue.setText("xValue: " +  intent.getExtras().getFloat("xValue"));
+                yValue.setText("yValue: " +   intent.getExtras().getFloat("yValue"));
+                zValue.setText("zValue: " +  intent.getExtras().getFloat("zValue"));
+
+            }
+        };
+
+
+        registerReceiver(sensorXYZUpdate, new IntentFilter("com.example.kwt.accelerometer.XYZDATA"));
+
+
+        //   Log.d(TAG, "onCreate: Initializing Sensor Services");
+        // sensorManger = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+
+        //accelerometer = sensorManger.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        //sensorManger.registerListener(MainActivity.this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        //Log.d(TAG, "onCreate: Registered accelerometer listner");
+
+        final Button serviceB=(Button)findViewById(R.id.serviceB);
+        flag=1;
+        serviceB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (flag == 1) {
+                    Toast.makeText(MainActivity.this, "ACTIVATED!", Toast.LENGTH_LONG).show();
+                    Log.d("MSG", "Activated the Service");
+                    startService(new Intent(getApplicationContext(), ShakeService.class));
+                    flag = 0;
+                } else {
+                    Toast.makeText(MainActivity.this, "DEACTIVATED!", Toast.LENGTH_LONG).show();
+                    stopService(new Intent(getApplicationContext(), ShakeService.class));
+                    Log.d("MSG", "Deactivated the Service");
+                    flag = 1;
+                }
+
+            }
+        });
+
 
 
     }
+
 
     private void houghLinePSeekbars() {
         seek_hough_threshold = (SeekBar)this.findViewById(R.id.seekBar3);
@@ -385,6 +452,20 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         return false;
     }
 
+    /* @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        Log.d(TAG, "onSensorChanged: X: " + sensorEvent.values[0] +" Y: " +sensorEvent.values[1] + " Z: " +sensorEvent.values[2]);
+
+        xValue.setText("xValue: " + sensorEvent.values[0]);
+        yValue.setText("yValue: " + sensorEvent.values[1]);
+        zValue.setText("zValue: " + sensorEvent.values[2]);
+
+    }*/
 
     /**
      * A native method that is implemented by the 'native-lib' native library,

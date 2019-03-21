@@ -1,4 +1,4 @@
-package com.example.kwt.accelerometer;
+package com.example.kwt.camera3;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,11 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 
 /**
  * Created by anask on 16-04-2016.

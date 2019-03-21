@@ -1,13 +1,10 @@
-package com.example.kwt.accelerometer;
+package com.example.kwt.camera3;
 
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorListener;
 import android.hardware.SensorManager;
-import android.content.Context;
 import android.util.Log;
-import android.widget.TextView;
-
-import java.lang.UnsupportedOperationException;
 
 public class ShakeListener implements SensorListener
 {

@@ -100,6 +100,39 @@
             android:layout_height="200dp"
             android:rotation="90"/>
 
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="point1" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/point2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+        <SeekBar
+            android:id="@+id/seekBar6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="point3" />
+
+        <SeekBar
+            android:id="@+id/seekBar7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <Space
             android:layout_width="match_parent"
             android:layout_height="100dp" />
@@ -169,6 +202,59 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:max="200" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="50sp"
+            android:id="@+id/spaceCamAcc"/>
+
+        <TextView
+            android:id="@+id/xValue"
+            android:layout_width="232dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="72dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="7dp"
+            android:text="TextView"
+            app:layout_constraintBottom_toTopOf="@+id/yValue"
+            app:layout_constraintEnd_toEndOf="@+id/spaceCamAcc"
+            app:layout_constraintTop_toTopOf="@+id/spaceCamAcc" />
+
+        <TextView
+            android:id="@+id/yValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="15dp"
+            android:text="TextView"
+            app:layout_constraintBottom_toTopOf="@+id/zValue"
+            app:layout_constraintStart_toStartOf="@+id/xValue"
+            app:layout_constraintTop_toBottomOf="@+id/xValue" />
+
+        <TextView
+            android:id="@+id/zValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="218dp"
+            android:text="TextView"
+            app:layout_constraintBottom_toTopOf="@+id/serviceB"
+            app:layout_constraintStart_toStartOf="@+id/yValue"
+            app:layout_constraintTop_toBottomOf="@+id/yValue" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <Button
+            android:id="@+id/serviceB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="131dp"
+            android:layout_marginBottom="90dp"
+            android:text="Button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+              />
 
 
     </LinearLayout>
