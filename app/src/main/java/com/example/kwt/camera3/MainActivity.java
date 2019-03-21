@@ -429,7 +429,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         //Calculate Lines
         Imgproc.HoughLinesP(image, lines, rho, theta, threshold, minLineLength, maxLineGap);
 
-        average_slope_intercept(image, lines);
+        int[][] leftRightLines =  average_HoughLinesP(image, lines);
 
         //Log.i(TAG, "lines.cols()" + lines.cols());
 
@@ -437,48 +437,121 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             double[] val = lines.get(0, i);
             if (val == null)
                 break;
-           // Log.i(TAG, "val[0], val[1] val[2], val[3]" + val[0] +", "+ val[1]+", "+  val[2] +", "+  val[3]);
+            //Log.i(TAG, "val[0], val[1] val[2], val[3]" + val[0] +", "+ val[1]+", "+  val[2] +", "+  val[3]);
+//            double[] parameters  = polyFit_getSlopeIntercept(val);
+//            double slope = parameters[0];
+//            double intercept = parameters[1];
+//
+//            Log.i(TAG, "X^0 = " + intercept + "\n");
+//            Log.i(TAG, "X^1 = " + slope + "\n");
             Imgproc.line(mRgba, new Point(val[0], val[1]), new Point(val[2], val[3]), new Scalar(0, 0, 255), 4);
         }
-        return mRgba;
+
+//        for (int i = 0; i < leftRightLines.length; i++) {
+//            int[] line = leftRightLines[i];
+//            if (line == null)
+//                break;
+//            Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(0, 0, 255), 4);
+//
+//        }
+            return mRgba;
     }
 
-    private void average_slope_intercept(Mat image, Mat lines) {
+    private int[][] average_HoughLinesP(Mat image, Mat lines) {
 
         //because of the inverse cartesian coordinate, lines on the left will
         //have negative slope and lines on right positive slope
-        List<Point> left_fit  = new ArrayList<>();
-        List<Point> right_fit  = new ArrayList<>();
+
+        ArrayList<double[]> left_fit = new ArrayList<double[]>();
+        ArrayList<double[]> right_fit = new ArrayList<double[]>();
+        double[] left_fit_average;
+        double[] right_fit_average;
 
         for (int i = 0; i < lines.cols(); i++) {
             double[] twoPoints = lines.get(0, i);
+
+            if( twoPoints == null) continue; //prevent crash when calculating slopeIntercept polynomial regression
 
             double[] parameters  = polyFit_getSlopeIntercept(twoPoints);
             double slope = parameters[0];
             double intercept = parameters[1];
 
-            Log.i(TAG, "X^0 = " + intercept + "\n");
-            Log.i(TAG, "X^1 = " + slope + "\n");
-
+            if (slope < 0)
+                left_fit.add(new double[] {slope, intercept});
+            else
+                right_fit.add(new double[] {slope, intercept});
+//            Log.i(TAG, "X^0 = " + intercept + "\n");
+//            Log.i(TAG, "X^1 = " + slope + "\n");
         }
-        //cropMaskArray.add(new Point(100, 360));
 
+    //check if there is a missing line, then add dummy line
+        if(left_fit.size() == 0 )
+            left_fit.add(new double[] {1, 1});
+        if(right_fit.size() == 0 )
+            right_fit.add(new double[] {-1, 0});
+
+
+//        left_fit_average = average_slope_intercept(left_fit);
+//        right_fit_average = average_slope_intercept(right_fit);
+
+
+        double[] leftAverage = average_slope_intercept(left_fit);
+        Log.i(TAG, "Left Slope AVG= " + leftAverage [0] + ", Y-Intercept AVG = "+ leftAverage [1] + "\n");
+
+        double[] rightAverage = average_slope_intercept(right_fit);
+        Log.i(TAG, "Right Slope AVG= " + rightAverage [0] + ", Y-Intercept AVG = "+ rightAverage [1] + "\n");
+
+
+        int[] leftLineCoordinates = make_coordinates(image, leftAverage);
+
+        int[] rightLineCoordinates = make_coordinates(image, rightAverage);
+
+        return new int[][]{leftLineCoordinates, rightLineCoordinates};
+    }
+
+    private int[] make_coordinates(Mat image, double[] average) {
+        int y1 = image.height();
+        int y2 =  (int) (y1 * 4/5);
+        int x1 = (int) ((y1 - average[1])/ average[0]);
+        int x2 = (int) ((y2 - average[1])/ average[0]) ;
+
+        return new int[]{x1,y1,x2,y2};
+    }
+
+    private double[] average_slope_intercept(ArrayList<double[]> lines) {
+
+
+        double  sumSlopes = 0;
+        double avgSlope = 0 ;
+        double  sumIntercepts = 0;
+        double avgIntercept = 0 ;
+
+        //calculate slopes and intercept average
+        if(!(lines.size() == 0 )) {
+            for (double[] line: lines) {
+                sumSlopes += line[0];
+                sumIntercepts += line[1];
+            }
+            avgSlope =  sumSlopes / lines.size();
+            avgIntercept =  sumIntercepts / lines.size();
+        }
+
+        return new double[] {avgSlope, avgIntercept};
     }
 
     // From: https://www.bragitoff.com/2017/04/polynomial-fitting-java-codeprogram-works-android-well/
     private double[] polyFit_getSlopeIntercept(double[] twoPoints){
 
         System.out.print("polyfit Run\n");
-/*
 
         double[] x = {twoPoints[0],twoPoints[2]};        //array to store x-axis data points
         double[] y = {twoPoints[1],twoPoints[3]};         //array to store y-axis data points
-*/
 
-
+/*
+        http://polynomialregression.drque.net/online.php
         double[] x= {1,3};        //array to store x-axis data points
         double[] y= {2,4};         //array to store y-axis data points
-
+*/
 
         int n = 1;                       //degree of polynomial to fit the data
         int N = 2 ;                       //no. of data points
