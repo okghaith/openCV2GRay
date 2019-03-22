@@ -81,9 +81,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
 
     //Seekbar variables
-    TextView text_canny_threshold1, text_canny_threshold2, text_hough_threshold,text_hough_minLength,text_hough_maxGap,text_poly_point1,text_poly_point2,text_poly_point3;
-    SeekBar seek_canny_threshold1, seek_canny_threshold2, seek_hough_threshold,seek_hough_minLength,seek_hough_maxGap,seek_poly_point1,seek_poly_point2,seek_poly_point3;
-    public int canny_threshold1, canny_threshold2, hough_threshold,hough_minLength,hough_maxGap;
+    TextView text_canny_threshold1, text_canny_threshold2, text_hough_threshold, text_hough_minLength, text_hough_maxGap, textViewPolyX1, textViewPolyX2, textViewPolyX3, textViewPolyX4;
+    SeekBar seek_canny_threshold1, seek_canny_threshold2, seek_hough_threshold, seek_hough_minLength, seek_hough_maxGap, seekBarX1Poly, seekBarX2Poly, seekBarX3Poly, seekBarX4Poly;
+    public int canny_threshold1, canny_threshold2, hough_threshold, hough_minLength, hough_maxGap, PolyX1, PolyX2, PolyX3,PolyX4, camWidth, camHeight;
     private Bitmap bmpBlack;
 
 
@@ -128,6 +128,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         imageView_mask = findViewById(R.id.imageView_Mask);
         imageView_maskCanny = findViewById(R.id.imageView_maskCanny);
 
+        //Import Black Image and Convert to Bmp
+        blackImgInit();
 
         //Canny Seek bars
         cannySeekBars();
@@ -135,18 +137,112 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         //HoughLineP Seekbars
         houghLinePSeekbars();
 
-        //Import Black Image and Convert to Bmp
-        blackImgInit();
+        //Poly Triangle Seekbars
+        polySeekbars();
+
 
         //Initialize textViews + Register Broadcast Receiver
         accelInit();
 
     }
 
+    private void polySeekbars() {
+        seekBarX1Poly = findViewById(R.id.seekBarX1Poly);
+        seekBarX1Poly.setMax(900);
+        textViewPolyX1 = findViewById(R.id.textViewPolyX1);
+        textViewPolyX1.setText(seekBarX1Poly.getProgress() + " / " + seekBarX1Poly.getMax());
+        seekBarX1Poly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                PolyX1 = progress;
+                textViewPolyX1.setText(progress + " / " + seekBarX1Poly.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        seekBarX2Poly = findViewById(R.id.seekBarX2Poly);
+        seekBarX2Poly.setMax(900);
+        textViewPolyX2 = findViewById(R.id.textViewPolyX2);
+        textViewPolyX2.setText(seekBarX2Poly.getProgress() + " / " + seekBarX2Poly.getMax());
+        seekBarX2Poly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                PolyX2 = progress;
+                textViewPolyX2.setText(progress + " / " + seekBarX2Poly.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+
+        seekBarX3Poly = findViewById(R.id.seekBarX3Poly);
+        seekBarX3Poly.setMax(900);
+        textViewPolyX3 = findViewById(R.id.textViewPolyX3);
+        textViewPolyX3.setText(seekBarX3Poly.getProgress() + " / " + seekBarX3Poly.getMax());
+        seekBarX3Poly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                PolyX3 = progress;
+                textViewPolyX3.setText(progress + " / " + seekBarX3Poly.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+
+        seekBarX4Poly = findViewById(R.id.seekBarX4Poly);
+        seekBarX4Poly.setMax(900);
+        seekBarX4Poly.setProgress(100);
+        textViewPolyX4 = findViewById(R.id.textViewPolyX4);
+        textViewPolyX4.setText(seekBarX4Poly.getProgress() + " / " + seekBarX4Poly.getMax());
+        seekBarX4Poly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                PolyX4 = progress;
+                textViewPolyX4.setText(progress + " / " + seekBarX4Poly.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+
     private void blackImgInit() {
         //upload black pic
         InputStream stream = null;
-        Uri uri = Uri.parse("android.resource://" + getPackageName() +"/"+ R.drawable.black_640_360);
+        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.black_640_360);
         try {
             stream = getContentResolver().openInputStream(uri);
         } catch (FileNotFoundException e) {
@@ -161,9 +257,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     private void accelInit() {
 
         //Accel textviews
-        textXval =(TextView)findViewById(R.id.xValue);
-        textYval =(TextView)findViewById(R.id.yValue);
-        textZval =(TextView)findViewById(R.id.zValue);
+        textXval = (TextView) findViewById(R.id.xValue);
+        textYval = (TextView) findViewById(R.id.yValue);
+        textZval = (TextView) findViewById(R.id.zValue);
         textLongLat = (TextView) findViewById(R.id.LongLat);
 
         //Receives X,Y,Z values from ShakerListener broadcast
@@ -171,9 +267,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                textXval.setText("textXval: " +  intent.getExtras().getFloat("textXval"));
-                textYval.setText("textYval: " +   intent.getExtras().getFloat("textYval"));
-                textZval.setText("textZval: " +  intent.getExtras().getFloat("textZval"));
+                textXval.setText("textXval: " + intent.getExtras().getFloat("textXval"));
+                textYval.setText("textYval: " + intent.getExtras().getFloat("textYval"));
+                textZval.setText("textZval: " + intent.getExtras().getFloat("textZval"));
 
             }
         };
@@ -182,8 +278,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         registerReceiver(sensorXYZUpdate, new IntentFilter("com.example.kwt.accelerometer.XYZDATA"));
 
 
-        final Button serviceB=(Button)findViewById(R.id.serviceB);
-        accelServiceFlag =1;
+        final Button serviceB = (Button) findViewById(R.id.serviceB);
+        accelServiceFlag = 1;
         serviceB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -204,17 +300,17 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
 
     private void houghLinePSeekbars() {
-        seek_hough_threshold = (SeekBar)this.findViewById(R.id.seekBar3);
-        seek_hough_minLength = (SeekBar)this.findViewById(R.id.seekBar4);
-        seek_hough_maxGap = (SeekBar)this.findViewById(R.id.seekBar5);
+        seek_hough_threshold = (SeekBar) this.findViewById(R.id.seekBar3);
+        seek_hough_minLength = (SeekBar) this.findViewById(R.id.seekBar4);
+        seek_hough_maxGap = (SeekBar) this.findViewById(R.id.seekBar5);
 
-        text_hough_threshold=(TextView)findViewById(R.id.textView3);
+        text_hough_threshold = (TextView) findViewById(R.id.textView3);
         text_hough_threshold.setText(seek_hough_threshold.getProgress() + " / " + seek_hough_threshold.getMax());
 
-        text_hough_minLength=(TextView)findViewById(R.id.textView4);
+        text_hough_minLength = (TextView) findViewById(R.id.textView4);
         text_hough_minLength.setText(seek_hough_minLength.getProgress() + " / " + seek_hough_minLength.getMax());
 
-        text_hough_maxGap=(TextView)findViewById(R.id.textView5);
+        text_hough_maxGap = (TextView) findViewById(R.id.textView5);
         text_hough_maxGap.setText(seek_hough_maxGap.getProgress() + " / " + seek_hough_maxGap.getMax());
 
         seek_hough_threshold.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -273,8 +369,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
 
     private void cannySeekBars() {
-        seek_canny_threshold1 =(SeekBar)this.findViewById(R.id.seekBar1);
-        seek_canny_threshold2 =(SeekBar)this.findViewById(R.id.seekBar2);
+        seek_canny_threshold1 = (SeekBar) this.findViewById(R.id.seekBar1);
+        seek_canny_threshold2 = (SeekBar) this.findViewById(R.id.seekBar2);
 
         text_canny_threshold1 = (TextView) findViewById(R.id.textView1);
         text_canny_threshold1.setText(seek_canny_threshold1.getProgress() + " / " + seek_canny_threshold1.getMax());
@@ -303,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         seek_canny_threshold2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                canny_threshold2 =progress;
+                canny_threshold2 = progress;
                 text_canny_threshold2.setText(progress + " / " + seek_canny_threshold2.getMax());
             }
 
@@ -322,8 +418,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     @Override
     protected void onPause() {
         super.onPause();
-        if(mOpenCvCameraView!=null)
-        {
+        if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
         }
     }
@@ -331,12 +426,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     @Override
     protected void onResume() {
         super.onResume();
-        if(!OpenCVLoader.initDebug())
-        {
-            Toast.makeText(getApplicationContext(),"openCV did not Loaded successfully",Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
+        if (!OpenCVLoader.initDebug()) {
+            Toast.makeText(getApplicationContext(), "openCV did not Loaded successfully", Toast.LENGTH_SHORT).show();
+        } else {
             mLoaderCallback.onManagerConnected(BaseLoaderCallback.SUCCESS);
         }
     }
@@ -344,29 +436,34 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mOpenCvCameraView!=null)
-        {
+        if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
         }
     }
 
     public void onCameraViewStarted(int width, int height) {
         //H360:,W:640
-        grayBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
-        cannyBitmap = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
-        houghBitmap =  Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
-        maskBitmap =   Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
-        masked_cannyBitmap =  Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
+        camHeight = height;
+        camWidth = width;
+        grayBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        cannyBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        houghBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        maskBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        masked_cannyBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
 
-        mRgba = new Mat(width,height,CvType.CV_8UC4);
-        gray = new Mat(width,height,CvType.CV_8SC1);
-        canny = new Mat(width,height,CvType.CV_8SC1);
-        hough = new Mat(width,height,CvType.CV_8SC1);
-        masked_canny =  new Mat(width,height,CvType.CV_8SC1);
-        mask  = new Mat(width,height,CvType.CV_8SC1);
+        mRgba = new Mat(width, height, CvType.CV_8UC4);
+        gray = new Mat(width, height, CvType.CV_8SC1);
+        canny = new Mat(width, height, CvType.CV_8SC1);
+        hough = new Mat(width, height, CvType.CV_8SC1);
+        masked_canny = new Mat(width, height, CvType.CV_8SC1);
+        mask = new Mat(width, height, CvType.CV_8SC1);
+        resetBlackImage();
+
+    }
+
+    private void resetBlackImage() {
         Utils.bitmapToMat(bmpBlack, mask);
-        Imgproc.cvtColor(mask, mask , Imgproc.COLOR_RGB2GRAY); // from 3 channels to 1 channel
-
+        Imgproc.cvtColor(mask, mask, Imgproc.COLOR_RGB2GRAY); // from 3 channels to 1 channel
     }
 
     public void onCameraViewStopped() {
@@ -377,33 +474,34 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         //Log.i(TAG, "Got New Frame!");
         mRgba = inputFrame.rgba();
 
-        Imgproc.cvtColor(mRgba, gray , Imgproc.COLOR_RGB2GRAY);
+        Imgproc.cvtColor(mRgba, gray, Imgproc.COLOR_RGB2GRAY);
         Imgproc.Canny(gray, canny, canny_threshold1, canny_threshold2);
 
         List<Point> cropMaskArray = new ArrayList<>();
-        cropMaskArray.add(new Point(100, 360));
-        cropMaskArray.add(new Point(320, 180));
-        cropMaskArray.add(new Point(540, 360));
-        org.opencv.core.Point [] pointArray = new org.opencv.core.Point[cropMaskArray.size()];
+        cropMaskArray.add(new Point(PolyX1, camHeight));
+        cropMaskArray.add(new Point(PolyX2, PolyX4));
+        cropMaskArray.add(new Point(PolyX3, camHeight));
+        org.opencv.core.Point[] pointArray = new org.opencv.core.Point[cropMaskArray.size()];
         Point pt;
-        for(int i = 0; i < cropMaskArray.size(); i++){
+        for (int i = 0; i < cropMaskArray.size(); i++) {
             pt = cropMaskArray.get(i);
             pointArray[i] = new org.opencv.core.Point(pt.x, pt.y);
         }
         MatOfPoint points = new MatOfPoint(pointArray);
+        resetBlackImage();
         fillConvexPoly(mask, points, new Scalar(255, 255, 255));
 
 
         Core.bitwise_and(canny, mask, masked_canny);//mask should be just 1 channel
 
-        hough = getHoughPTransform(masked_canny,1, Math.PI / 180, hough_threshold, hough_minLength,hough_maxGap);
+        hough = getHoughPTransform(masked_canny, 1, Math.PI / 180, hough_threshold, hough_minLength, hough_maxGap);
 
         //H:360XW:640
         Utils.matToBitmap(gray, grayBitmap);
-        Utils.matToBitmap(canny,cannyBitmap);
-        Utils.matToBitmap(hough,houghBitmap);
-        Utils.matToBitmap(mask,maskBitmap);
-        Utils.matToBitmap(masked_canny,masked_cannyBitmap);
+        Utils.matToBitmap(canny, cannyBitmap);
+        Utils.matToBitmap(hough, houghBitmap);
+        Utils.matToBitmap(mask, maskBitmap);
+        Utils.matToBitmap(masked_canny, masked_cannyBitmap);
 
 
         runOnUiThread(new Runnable() {
@@ -429,7 +527,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         //Calculate Lines
         Imgproc.HoughLinesP(image, lines, rho, theta, threshold, minLineLength, maxLineGap);
 
-        int[][] leftRightLines =  average_HoughLinesP(image, lines);
+        int[][] leftRightLines = average_HoughLinesP(image, lines);
 
         //Log.i(TAG, "lines.cols()" + lines.cols());
 
@@ -454,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 //            Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(0, 0, 255), 4);
 //
 //        }
-            return mRgba;
+        return mRgba;
     }
 
     private int[][] average_HoughLinesP(Mat image, Mat lines) {
@@ -470,25 +568,26 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         for (int i = 0; i < lines.cols(); i++) {
             double[] twoPoints = lines.get(0, i);
 
-            if( twoPoints == null) continue; //prevent crash when calculating slopeIntercept polynomial regression
+            if (twoPoints == null)
+                continue; //prevent crash when calculating slopeIntercept polynomial regression
 
-            double[] parameters  = polyFit_getSlopeIntercept(twoPoints);
+            double[] parameters = polyFit_getSlopeIntercept(twoPoints);
             double slope = parameters[0];
             double intercept = parameters[1];
 
             if (slope < 0)
-                left_fit.add(new double[] {slope, intercept});
+                left_fit.add(new double[]{slope, intercept});
             else
-                right_fit.add(new double[] {slope, intercept});
+                right_fit.add(new double[]{slope, intercept});
 //            Log.i(TAG, "X^0 = " + intercept + "\n");
 //            Log.i(TAG, "X^1 = " + slope + "\n");
         }
 
-    //check if there is a missing line, then add dummy line
-        if(left_fit.size() == 0 )
-            left_fit.add(new double[] {1, 1});
-        if(right_fit.size() == 0 )
-            right_fit.add(new double[] {-1, 0});
+        //check if there is a missing line, then add dummy line
+        if (left_fit.size() == 0)
+            left_fit.add(new double[]{1, 1});
+        if (right_fit.size() == 0)
+            right_fit.add(new double[]{-1, 0});
 
 
 //        left_fit_average = average_slope_intercept(left_fit);
@@ -496,10 +595,10 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
 
         double[] leftAverage = average_slope_intercept(left_fit);
-        Log.i(TAG, "Left Slope AVG= " + leftAverage [0] + ", Y-Intercept AVG = "+ leftAverage [1] + "\n");
+        Log.i(TAG, "Left Slope AVG= " + leftAverage[0] + ", Y-Intercept AVG = " + leftAverage[1] + "\n");
 
         double[] rightAverage = average_slope_intercept(right_fit);
-        Log.i(TAG, "Right Slope AVG= " + rightAverage [0] + ", Y-Intercept AVG = "+ rightAverage [1] + "\n");
+        Log.i(TAG, "Right Slope AVG= " + rightAverage[0] + ", Y-Intercept AVG = " + rightAverage[1] + "\n");
 
 
         int[] leftLineCoordinates = make_coordinates(image, leftAverage);
@@ -511,41 +610,41 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     private int[] make_coordinates(Mat image, double[] average) {
         int y1 = image.height();
-        int y2 =  (int) (y1 * 4/5);
-        int x1 = (int) ((y1 - average[1])/ average[0]);
-        int x2 = (int) ((y2 - average[1])/ average[0]) ;
+        int y2 = (int) (y1 * 4 / 5);
+        int x1 = (int) ((y1 - average[1]) / average[0]);
+        int x2 = (int) ((y2 - average[1]) / average[0]);
 
-        return new int[]{x1,y1,x2,y2};
+        return new int[]{x1, y1, x2, y2};
     }
 
     private double[] average_slope_intercept(ArrayList<double[]> lines) {
 
 
-        double  sumSlopes = 0;
-        double avgSlope = 0 ;
-        double  sumIntercepts = 0;
-        double avgIntercept = 0 ;
+        double sumSlopes = 0;
+        double avgSlope = 0;
+        double sumIntercepts = 0;
+        double avgIntercept = 0;
 
         //calculate slopes and intercept average
-        if(!(lines.size() == 0 )) {
-            for (double[] line: lines) {
+        if (!(lines.size() == 0)) {
+            for (double[] line : lines) {
                 sumSlopes += line[0];
                 sumIntercepts += line[1];
             }
-            avgSlope =  sumSlopes / lines.size();
-            avgIntercept =  sumIntercepts / lines.size();
+            avgSlope = sumSlopes / lines.size();
+            avgIntercept = sumIntercepts / lines.size();
         }
 
-        return new double[] {avgSlope, avgIntercept};
+        return new double[]{avgSlope, avgIntercept};
     }
 
     // From: https://www.bragitoff.com/2017/04/polynomial-fitting-java-codeprogram-works-android-well/
-    private double[] polyFit_getSlopeIntercept(double[] twoPoints){
+    private double[] polyFit_getSlopeIntercept(double[] twoPoints) {
 
         System.out.print("polyfit Run\n");
 
-        double[] x = {twoPoints[0],twoPoints[2]};        //array to store x-axis data points
-        double[] y = {twoPoints[1],twoPoints[3]};         //array to store y-axis data points
+        double[] x = {twoPoints[0], twoPoints[2]};        //array to store x-axis data points
+        double[] y = {twoPoints[1], twoPoints[3]};         //array to store y-axis data points
 
 /*
         http://polynomialregression.drque.net/online.php
@@ -554,7 +653,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 */
 
         int n = 1;                       //degree of polynomial to fit the data
-        int N = 2 ;                       //no. of data points
+        int N = 2;                       //no. of data points
 
         double X[] = new double[2 * n + 1];
         for (int i = 0; i < 2 * n + 1; i++) {
@@ -610,7 +709,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     /**
      * A native method that is implemented by the 'native-lib' native library,
-
+     * <p>
      * which is packaged with this application.
      */
     public native String stringFromJNI();
