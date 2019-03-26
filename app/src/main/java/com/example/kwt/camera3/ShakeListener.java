@@ -36,7 +36,7 @@ public class ShakeListener implements SensorListener
         resume();
     }
 
-    public void setOnShakeListener(OnShakeListener listener)
+    public void  setOnShakeListener(OnShakeListener listener)
     {
         mShakeListener = listener;
     }
