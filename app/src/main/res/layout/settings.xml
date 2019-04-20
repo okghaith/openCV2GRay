@@ -59,7 +59,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="20dp" />
+            android:layout_height="60dp" />
 
         <TextView
             android:id="@+id/textView9"
@@ -67,6 +67,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="2- Applying Gray Filter" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
+
         <ImageView
             android:id="@+id/imageView_gray"
             android:layout_width="match_parent"
@@ -76,7 +81,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="20dp" />
+            android:layout_height="100dp" />
 
         <TextView
             android:id="@+id/textView7"
@@ -84,6 +89,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="3- Edge Detection (Canny)" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
+
         <ImageView
             android:id="@+id/imageView_canny"
             android:layout_width="match_parent"
@@ -93,7 +103,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="20dp" />
+            android:layout_height="100dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -139,7 +149,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="20dp" />
+            android:layout_height="100dp" />
 
         <TextView
             android:id="@+id/textView8"
@@ -147,6 +157,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="4- Generate Lane Polygon MasK" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
+
         <ImageView
             android:id="@+id/imageView_Mask"
             android:layout_width="match_parent"
@@ -155,7 +170,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="20dp" />
+            android:layout_height="100dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -234,7 +249,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="20dp" />
+            android:layout_height="100dp" />
 
         <TextView
             android:id="@+id/textView10"
@@ -242,6 +257,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="5- Combine Mask and Edge Detection" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
+
         <ImageView
             android:id="@+id/imageView_maskCanny"
             android:layout_width="match_parent"
@@ -250,7 +270,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="20dp" />
+            android:layout_height="100dp" />
 
         <TextView
             android:id="@+id/textView11"
@@ -258,6 +278,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="6- Line Detection (HoughLineP)" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
 
         <ImageView
             android:id="@+id/imageView_hough"
@@ -267,7 +291,7 @@
             android:src="@drawable/ic_launcher_background" />
         <Space
             android:layout_width="match_parent"
-            android:layout_height="20dp" />
+            android:layout_height="100dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -330,7 +354,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="100dp"
             android:id="@+id/spaceCamAcc"/>
 
         <Button
