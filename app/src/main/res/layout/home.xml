@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Home"
+    >
+
+
+    <LinearLayout android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="Home Screen" />
+
+
+        <org.opencv.android.JavaCameraView
+        android:id="@+id/myCameraView"
+        android:layout_width="match_parent"
+        android:layout_height="231dp"/>
+
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="Lane Detection (F)" />
+
+        <Space
+            android:id="@+id/space1"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <ImageView
+            android:id="@+id/imageView_hough"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:rotation="90"
+
+            android:src="@drawable/ic_launcher_background" />
+
+
+        <Space
+            android:id="@+id/spaceCamAcc"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginLeft="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Accelerometer Values" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Accelerometer G Force: " />
+        <TextView
+            android:id="@+id/g_forceVal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="g_force " />
+        <TextView
+            android:id="@+id/xValue"
+            android:layout_width="232dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="xValue"
+            app:layout_constraintBottom_toTopOf="@+id/yValue"
+            app:layout_constraintEnd_toEndOf="@+id/spaceCamAcc"
+            app:layout_constraintTop_toTopOf="@+id/spaceCamAcc" />
+
+        <TextView
+            android:id="@+id/yValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="yValue"
+            app:layout_constraintBottom_toTopOf="@+id/zValue"
+            app:layout_constraintStart_toStartOf="@+id/xValue"
+            app:layout_constraintTop_toBottomOf="@+id/xValue" />
+
+        <TextView
+            android:id="@+id/zValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="zValue"
+            app:layout_constraintBottom_toTopOf="@+id/serviceB"
+            app:layout_constraintStart_toStartOf="@+id/yValue"
+            app:layout_constraintTop_toBottomOf="@+id/yValue" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp" />
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="System Status" />
+
+        <TextView
+            android:id="@+id/txtstatuslog"
+            android:layout_width="match_parent"
+            android:background="@drawable/back"
+            android:layout_height="270dp"
+            android:layout_margin="15dp"
+            android:text="Initializing Lane Detection.....\nLane Detection Activated\nInitializing Accelerometer......\nAccelerometer Activated Successfully....\nStart GPS Monitoring.....\nGPS Satellite Lock..............\nGPS Signals Received Successfully\nActivating Microphone.....\nSystem Ready and Waiting for Anamoly........\n\nWarning: Lane Missing!\n15 seconds Timer started.....\nWarning:High G-Force Detected!\nWarning:High Audio Db detected!\nCrash Detected\nSending Emergency Help SMS + GPS Coordinates "
+            android:visibility="visible"
+            tools:text="Initializing Lane Detection.....\nLane Detection Activated\nInitializing Accelerometer......\nAccelerometer Activated Successfully....\nStart GPS Monitoring.....\nGPS Satellite Lock..............\nGPS Signals Received Successfully\nActivating Microphone.....\nSystem Ready and Waiting for Anamoly........\n\nWarning: Lane Missing!\n15 seconds Timer started.....\nWarning:High G-Force Detected!\nWarning:High Audio Db detected!\nCrash Detected\nSending Emergency Help SMS + GPS Coordinates " />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="Settings" android:onClick="onOpenSettings" />
+
+
+    </LinearLayout>
+
+</ScrollView>

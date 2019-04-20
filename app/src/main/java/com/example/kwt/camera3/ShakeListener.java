@@ -36,7 +36,7 @@ public class ShakeListener implements SensorListener
         resume();
     }
 
-    public void setOnShakeListener(OnShakeListener listener)
+    public void  setOnShakeListener(OnShakeListener listener)
     {
         mShakeListener = listener;
     }
@@ -96,9 +96,9 @@ public class ShakeListener implements SensorListener
             Log.d("MSG", "Sensor Value Changed");
 
             Intent intent = new Intent("com.example.kwt.accelerometer.XYZDATA");
-            intent.putExtra("xValue",mLastX);
-            intent.putExtra("yValue",mLastY);
-            intent.putExtra("zValue",mLastZ);
+            intent.putExtra("textXval",mLastX);
+            intent.putExtra("textYval",mLastY);
+            intent.putExtra("textZval",mLastZ);
             mContext.sendBroadcast(intent);
         }
     }

@@ -17,6 +17,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -45,8 +46,8 @@ import java.util.List;
 import static org.opencv.imgproc.Imgproc.fillConvexPoly;
 
 
-public class MainActivity extends AppCompatActivity implements CvCameraViewListener2 {
-    private static final String TAG = "MyActivity_OpenCVTest";
+public class Settings extends AppCompatActivity implements CvCameraViewListener2 {
+    private static final String TAG = "Settings_OpenCVTest";
     private CameraBridgeViewBase mOpenCvCameraView;
 
     //Sensors
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.settings);
         Log.i(TAG, "called onCreate");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -284,12 +285,12 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             @Override
             public void onClick(View v) {
                 if (accelServiceFlag == 1) {
-                    Toast.makeText(MainActivity.this, "ACTIVATED!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(Settings.this, "ACTIVATED!", Toast.LENGTH_LONG).show();
                     Log.d("MSG", "Activated the Service");
                     startService(new Intent(getApplicationContext(), ShakeService.class));
                     accelServiceFlag = 0;
                 } else {
-                    Toast.makeText(MainActivity.this, "DEACTIVATED!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(Settings.this, "DEACTIVATED!", Toast.LENGTH_LONG).show();
                     stopService(new Intent(getApplicationContext(), ShakeService.class));
                     Log.d("MSG", "Deactivated the Service");
                     accelServiceFlag = 1;
@@ -527,10 +528,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         //Calculate Lines
         Imgproc.HoughLinesP(image, lines, rho, theta, threshold, minLineLength, maxLineGap);
 
-        int[][] leftRightLines = average_HoughLinesP(image, lines);
 
-        //Log.i(TAG, "lines.cols()" + lines.cols());
-
+        Log.i(TAG, "lines.cols()" + lines.cols());
         for (int i = 0; i < lines.cols(); i++) {
             double[] val = lines.get(0, i);
             if (val == null)
@@ -545,13 +544,16 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             Imgproc.line(mRgba, new Point(val[0], val[1]), new Point(val[2], val[3]), new Scalar(0, 0, 255), 4);
         }
 
-//        for (int i = 0; i < leftRightLines.length; i++) {
-//            int[] line = leftRightLines[i];
-//            if (line == null)
-//                break;
-//            Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(0, 0, 255), 4);
-//
-//        }
+        int[][] leftRightLines = average_HoughLinesP(image, lines);
+
+        for (int i = 0; i < leftRightLines.length; i++) {
+            int[] line = leftRightLines[i];
+            if (line == null)
+                break;
+            Log.i(TAG, "line[0], line[1] line[2], line[3]" + line[0] +", "+ line[1]+", "+  line[2] +", "+  line[3]);
+            Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(255, 0, 0), 4);
+
+        }
         return mRgba;
     }
 
@@ -584,15 +586,11 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         }
 
         //check if there is a missing line, then add dummy line
-        if (left_fit.size() == 0)
-            left_fit.add(new double[]{1, 1});
-        if (right_fit.size() == 0)
-            right_fit.add(new double[]{-1, 0});
-
-
-//        left_fit_average = average_slope_intercept(left_fit);
-//        right_fit_average = average_slope_intercept(right_fit);
-
+//        if (left_fit.size() == 0)
+//            left_fit.add(new double[]{1, 1});
+//        if (right_fit.size() == 0)
+//            right_fit.add(new double[]{-1, 0});
+//
 
         double[] leftAverage = average_slope_intercept(left_fit);
         Log.i(TAG, "Left Slope AVG= " + leftAverage[0] + ", Y-Intercept AVG = " + leftAverage[1] + "\n");
@@ -600,12 +598,19 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         double[] rightAverage = average_slope_intercept(right_fit);
         Log.i(TAG, "Right Slope AVG= " + rightAverage[0] + ", Y-Intercept AVG = " + rightAverage[1] + "\n");
 
+        int[] leftLineCoordinates = {0,0,0,0,0};
+        int[] rightLineCoordinates = {0,0,0,0};
 
-        int[] leftLineCoordinates = make_coordinates(image, leftAverage);
+        if(leftAverage[0] != 0 || leftAverage[1] != 0 ) {
+            leftLineCoordinates = make_coordinates(image, leftAverage);
+            return new int[][]{leftLineCoordinates, {0, 0, 0, 0}};
+        }
+        if(leftAverage[0] != 0 || leftAverage[1] != 0 ) {
+            rightLineCoordinates = make_coordinates(image, rightAverage);
+            return new int[][]{{0, 0, 0, 0}, rightLineCoordinates};
+        }
 
-        int[] rightLineCoordinates = make_coordinates(image, rightAverage);
-
-        return new int[][]{leftLineCoordinates, rightLineCoordinates};
+        return new int[][]{{0,0, 0, 0}, {0, 0, 0,0}};
     }
 
     private int[] make_coordinates(Mat image, double[] average) {
@@ -715,4 +720,27 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public native String stringFromJNI();
 
 
+    public void applySettings(View view) {
+
+        EditText phoneNumber = findViewById(R.id.phone_number);
+        EditText gForce = findViewById(R.id.g_force);
+
+        Intent goingBack = new Intent();
+
+        goingBack.putExtra("phoneNumber", String.valueOf(phoneNumber.getText()));
+        goingBack.putExtra("gForce", String.valueOf(gForce.getText()));
+
+        int[] PolyMaskSettings = {PolyX1, PolyX2, PolyX3, PolyX4};
+        goingBack.putExtra("PolyMaskSettings", PolyMaskSettings );
+
+        int [] cannySettings = {canny_threshold1, canny_threshold2};
+        goingBack.putExtra("cannySettings", cannySettings);
+
+        int [] HoughLinePSettings = {hough_threshold, hough_minLength, hough_maxGap};
+        goingBack.putExtra("HoughLinePSettings", HoughLinePSettings);
+
+        setResult(RESULT_OK, goingBack);
+        finish();
+
+    }
 }

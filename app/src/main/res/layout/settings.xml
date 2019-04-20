@@ -1,15 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Settings">
 
 
     <LinearLayout android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:orientation="horizontal"
+            android:padding="10dp">
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="Emergency Phone Number"/>
+
+            <EditText
+                android:id="@+id/phone_number"
+                android:layout_width="185dp"
+                android:layout_height="wrap_content"
+                android:text="+64211484398" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:orientation="horizontal"
+            android:padding="10dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="G Force"/>
+
+            <EditText
+                android:id="@+id/g_force"
+                android:layout_width="185dp"
+                android:layout_height="wrap_content"
+                android:text="10000" />
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/textView6"
@@ -22,12 +55,11 @@
             android:id="@+id/myCameraView"
             android:layout_width="match_parent"
             android:layout_height="231dp"
-
             app:show_fps="true" />
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="100dp" />
+            android:layout_height="60dp" />
 
         <TextView
             android:id="@+id/textView9"
@@ -35,6 +67,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="2- Applying Gray Filter" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
+
         <ImageView
             android:id="@+id/imageView_gray"
             android:layout_width="match_parent"
@@ -52,6 +89,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="3- Edge Detection (Canny)" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
+
         <ImageView
             android:id="@+id/imageView_canny"
             android:layout_width="match_parent"
@@ -59,11 +101,25 @@
             android:rotation="90"
             android:src="@drawable/ic_launcher_background" />
 
-        <TextView
-            android:id="@+id/textView1"
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Threshold 1" />
+            android:layout_height="100dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Threshold 1: " />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Threshold 1" />
+
+        </LinearLayout>
 
         <SeekBar
             android:id="@+id/seekBar1"
@@ -71,12 +127,19 @@
             android:layout_height="wrap_content"
             android:max="200" />
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Threshold 2:" />
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Threshold 2" />
-
+        </LinearLayout>
         <SeekBar
             android:id="@+id/seekBar2"
             android:layout_width="match_parent"
@@ -94,50 +157,90 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="4- Generate Lane Polygon MasK" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
+
         <ImageView
             android:id="@+id/imageView_Mask"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:rotation="90"/>
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PolyX1: " />
         <TextView
             android:id="@+id/textViewPolyX1"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="point1" />
+            android:text="PolyX1" />
+        </LinearLayout>
 
         <SeekBar
             android:id="@+id/seekBarX1Poly"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PolyX2: " />
         <TextView
             android:id="@+id/textViewPolyX2"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="PolyX2" />
+    </LinearLayout>
 
         <SeekBar
             android:id="@+id/seekBarX2Poly"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PolyX3: " />
         <TextView
             android:id="@+id/textViewPolyX3"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="point3" />
+            android:text="PolyX3" />
+    </LinearLayout>
 
         <SeekBar
             android:id="@+id/seekBarX3Poly"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PolyX4: " />
         <TextView
             android:id="@+id/textViewPolyX4"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="point4" />
+            android:text="PolyX4" />
+    </LinearLayout>
 
         <SeekBar
             android:id="@+id/seekBarX4Poly"
@@ -154,6 +257,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:text="5- Combine Mask and Edge Detection" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
+
         <ImageView
             android:id="@+id/imageView_maskCanny"
             android:layout_width="match_parent"
@@ -171,18 +279,33 @@
             android:layout_margin="20dp"
             android:text="6- Line Detection (HoughLineP)" />
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
+
         <ImageView
             android:id="@+id/imageView_hough"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:rotation="90"
             android:src="@drawable/ic_launcher_background" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hough Threshold: " />
         <TextView
             android:id="@+id/textView3"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="hough_Threshold" />
+    </LinearLayout>
 
         <SeekBar
             android:id="@+id/seekBar3"
@@ -190,11 +313,19 @@
             android:layout_height="wrap_content"
             android:max="200" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Min Line Length: " />
         <TextView
             android:id="@+id/textView4"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="minLineLengthval" />
+    </LinearLayout>
 
         <SeekBar
             android:id="@+id/seekBar4"
@@ -202,12 +333,19 @@
             android:layout_height="wrap_content"
             android:max="200" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max Line Gap: " />
         <TextView
             android:id="@+id/textView5"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="maxLineGapVal" />
-
+    </LinearLayout>
         <SeekBar
             android:id="@+id/seekBar5"
             android:layout_width="match_parent"
@@ -216,8 +354,17 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="50sp"
+            android:layout_height="100dp"
             android:id="@+id/spaceCamAcc"/>
+
+        <Button
+            android:id="@+id/serviceB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="Start Accel Service"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/xValue"
@@ -250,16 +397,15 @@
             app:layout_constraintStart_toStartOf="@+id/yValue"
             app:layout_constraintTop_toBottomOf="@+id/yValue" />
 
+
+
         <Button
-            android:id="@+id/serviceB"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:text="Start Accel Service"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-
+            android:layout_height="wrap_content" android:text="Apply" android:onClick="applySettings"/>
     </LinearLayout>
 
 </ScrollView>
+
+
+    

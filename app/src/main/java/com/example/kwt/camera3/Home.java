@@ -10,6 +10,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -42,24 +43,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.opencv.imgproc.Imgproc.compareHist;
 import static org.opencv.imgproc.Imgproc.fillConvexPoly;
 
 
-public class MainActivity extends AppCompatActivity implements CvCameraViewListener2 {
-    private static final String TAG = "MyActivity_OpenCVTest";
+public class Home extends AppCompatActivity implements CvCameraViewListener2 {
+    private static final String TAG = "Home_OpenCVTest";
     private CameraBridgeViewBase mOpenCvCameraView;
 
     //Sensors
-    private SensorManager sensorManger;
-    Sensor accelerometer;
-    int accelServiceFlag = 1;
+    BroadcastReceiver sensorXYZUpdate;
 
     //ImageViews
-    ImageView imageView_gray;
-    ImageView imageView_canny;
     ImageView imageView_hough;
-    ImageView imageView_mask;
-    ImageView imageView_maskCanny;
 
     //Bitmap vars
     Bitmap grayBitmap;
@@ -77,13 +73,11 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     Mat masked_canny;
 
     //TextViews
-    TextView textXval, textYval, textZval, textLongLat;
+    TextView textXval, textYval, textZval, textLongLat, textGforce;
 
-
-    //Seekbar variables
-    TextView text_canny_threshold1, text_canny_threshold2, text_hough_threshold, text_hough_minLength, text_hough_maxGap, textViewPolyX1, textViewPolyX2, textViewPolyX3, textViewPolyX4;
-    SeekBar seek_canny_threshold1, seek_canny_threshold2, seek_hough_threshold, seek_hough_minLength, seek_hough_maxGap, seekBarX1Poly, seekBarX2Poly, seekBarX3Poly, seekBarX4Poly;
-    public int canny_threshold1, canny_threshold2, hough_threshold, hough_minLength, hough_maxGap, PolyX1, PolyX2, PolyX3,PolyX4, camWidth, camHeight;
+    public int canny_threshold1, canny_threshold2, hough_threshold, hough_minLength, hough_maxGap, PolyX1, PolyX2, PolyX3,PolyX4, camWidth, camHeight,
+            gForce;
+    String phoneNumber;
     private Bitmap bmpBlack;
 
 
@@ -113,131 +107,37 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.home);
         Log.i(TAG, "called onCreate");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        //Default values
+        phoneNumber = "+64211484398";
+        gForce = 10000;
+        hough_threshold = 70;
+        hough_minLength= 35;
+        hough_maxGap= 22;
+        canny_threshold1 = 70;
+        canny_threshold2 = 70;
+        PolyX1 = 300;
+        PolyX2 = 200;
+        PolyX3 = 70;
+        PolyX4 = 125;
+
         //Set OpenCV View Visibility and Listener
         mOpenCvCameraView = findViewById(R.id.myCameraView);
-        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+//        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
 
-        imageView_gray = findViewById(R.id.imageView_gray);
-        imageView_canny = findViewById(R.id.imageView_canny);
         imageView_hough = findViewById(R.id.imageView_hough);
-        imageView_mask = findViewById(R.id.imageView_Mask);
-        imageView_maskCanny = findViewById(R.id.imageView_maskCanny);
 
         //Import Black Image and Convert to Bmp
         blackImgInit();
 
-        //Canny Seek bars
-        cannySeekBars();
-
-        //HoughLineP Seekbars
-        houghLinePSeekbars();
-
-        //Poly Triangle Seekbars
-        polySeekbars();
-
-
         //Initialize textViews + Register Broadcast Receiver
         accelInit();
-
     }
 
-    private void polySeekbars() {
-        seekBarX1Poly = findViewById(R.id.seekBarX1Poly);
-        seekBarX1Poly.setMax(900);
-        textViewPolyX1 = findViewById(R.id.textViewPolyX1);
-        textViewPolyX1.setText(seekBarX1Poly.getProgress() + " / " + seekBarX1Poly.getMax());
-        seekBarX1Poly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                PolyX1 = progress;
-                textViewPolyX1.setText(progress + " / " + seekBarX1Poly.getMax());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        seekBarX2Poly = findViewById(R.id.seekBarX2Poly);
-        seekBarX2Poly.setMax(900);
-        textViewPolyX2 = findViewById(R.id.textViewPolyX2);
-        textViewPolyX2.setText(seekBarX2Poly.getProgress() + " / " + seekBarX2Poly.getMax());
-        seekBarX2Poly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                PolyX2 = progress;
-                textViewPolyX2.setText(progress + " / " + seekBarX2Poly.getMax());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-
-        seekBarX3Poly = findViewById(R.id.seekBarX3Poly);
-        seekBarX3Poly.setMax(900);
-        textViewPolyX3 = findViewById(R.id.textViewPolyX3);
-        textViewPolyX3.setText(seekBarX3Poly.getProgress() + " / " + seekBarX3Poly.getMax());
-        seekBarX3Poly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                PolyX3 = progress;
-                textViewPolyX3.setText(progress + " / " + seekBarX3Poly.getMax());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-
-        seekBarX4Poly = findViewById(R.id.seekBarX4Poly);
-        seekBarX4Poly.setMax(900);
-        seekBarX4Poly.setProgress(100);
-        textViewPolyX4 = findViewById(R.id.textViewPolyX4);
-        textViewPolyX4.setText(seekBarX4Poly.getProgress() + " / " + seekBarX4Poly.getMax());
-        seekBarX4Poly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                PolyX4 = progress;
-                textViewPolyX4.setText(progress + " / " + seekBarX4Poly.getMax());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-    }
 
     private void blackImgInit() {
         //upload black pic
@@ -263,157 +163,22 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         textLongLat = (TextView) findViewById(R.id.LongLat);
 
         //Receives X,Y,Z values from ShakerListener broadcast
-        BroadcastReceiver sensorXYZUpdate = new BroadcastReceiver() {
+        sensorXYZUpdate = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
 
                 textXval.setText("textXval: " + intent.getExtras().getFloat("textXval"));
                 textYval.setText("textYval: " + intent.getExtras().getFloat("textYval"));
                 textZval.setText("textZval: " + intent.getExtras().getFloat("textZval"));
-
             }
         };
 
         //Register listener to XYZDATA Intent Broadcast
         registerReceiver(sensorXYZUpdate, new IntentFilter("com.example.kwt.accelerometer.XYZDATA"));
 
-
-        final Button serviceB = (Button) findViewById(R.id.serviceB);
-        accelServiceFlag = 1;
-        serviceB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (accelServiceFlag == 1) {
-                    Toast.makeText(MainActivity.this, "ACTIVATED!", Toast.LENGTH_LONG).show();
-                    Log.d("MSG", "Activated the Service");
-                    startService(new Intent(getApplicationContext(), ShakeService.class));
-                    accelServiceFlag = 0;
-                } else {
-                    Toast.makeText(MainActivity.this, "DEACTIVATED!", Toast.LENGTH_LONG).show();
-                    stopService(new Intent(getApplicationContext(), ShakeService.class));
-                    Log.d("MSG", "Deactivated the Service");
-                    accelServiceFlag = 1;
-                }
-
-            }
-        });
     }
 
-    private void houghLinePSeekbars() {
-        seek_hough_threshold = (SeekBar) this.findViewById(R.id.seekBar3);
-        seek_hough_minLength = (SeekBar) this.findViewById(R.id.seekBar4);
-        seek_hough_maxGap = (SeekBar) this.findViewById(R.id.seekBar5);
 
-        text_hough_threshold = (TextView) findViewById(R.id.textView3);
-        text_hough_threshold.setText(seek_hough_threshold.getProgress() + " / " + seek_hough_threshold.getMax());
-
-        text_hough_minLength = (TextView) findViewById(R.id.textView4);
-        text_hough_minLength.setText(seek_hough_minLength.getProgress() + " / " + seek_hough_minLength.getMax());
-
-        text_hough_maxGap = (TextView) findViewById(R.id.textView5);
-        text_hough_maxGap.setText(seek_hough_maxGap.getProgress() + " / " + seek_hough_maxGap.getMax());
-
-        seek_hough_threshold.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                hough_threshold = progress;
-                text_hough_threshold.setText(progress + " / " + seek_hough_threshold.getMax());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        seek_hough_minLength.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                hough_minLength = progress;
-                text_hough_minLength.setText(progress + " / " + seek_hough_minLength.getMax());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        seek_hough_maxGap.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                hough_maxGap = progress;
-                text_hough_maxGap.setText(progress + " / " + seek_hough_maxGap.getMax());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-    }
-
-    private void cannySeekBars() {
-        seek_canny_threshold1 = (SeekBar) this.findViewById(R.id.seekBar1);
-        seek_canny_threshold2 = (SeekBar) this.findViewById(R.id.seekBar2);
-
-        text_canny_threshold1 = (TextView) findViewById(R.id.textView1);
-        text_canny_threshold1.setText(seek_canny_threshold1.getProgress() + " / " + seek_canny_threshold1.getMax());
-
-        text_canny_threshold2 = (TextView) findViewById(R.id.textView2);
-        text_canny_threshold2.setText(seek_canny_threshold2.getProgress() + " / " + seek_canny_threshold2.getMax());
-
-
-        seek_canny_threshold1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                canny_threshold1 = progress;
-                text_canny_threshold1.setText(progress + " / " + seek_canny_threshold1.getMax());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-        seek_canny_threshold2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                canny_threshold2 = progress;
-                text_canny_threshold2.setText(progress + " / " + seek_canny_threshold2.getMax());
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-    }
 
     @Override
     protected void onPause() {
@@ -439,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
         }
+        this.unregisterReceiver(sensorXYZUpdate);
     }
 
     public void onCameraViewStarted(int width, int height) {
@@ -491,7 +257,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         resetBlackImage();
         fillConvexPoly(mask, points, new Scalar(255, 255, 255));
 
-
         Core.bitwise_and(canny, mask, masked_canny);//mask should be just 1 channel
 
         hough = getHoughPTransform(masked_canny, 1, Math.PI / 180, hough_threshold, hough_minLength, hough_maxGap);
@@ -507,12 +272,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                imageView_gray.setImageBitmap(grayBitmap);
-                imageView_canny.setImageBitmap(cannyBitmap);
                 imageView_hough.setImageBitmap(houghBitmap);
-                imageView_mask.setImageBitmap(maskBitmap);
-                imageView_maskCanny.setImageBitmap(masked_cannyBitmap);
             }
         });
 
@@ -527,7 +287,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         //Calculate Lines
         Imgproc.HoughLinesP(image, lines, rho, theta, threshold, minLineLength, maxLineGap);
 
-        int[][] leftRightLines = average_HoughLinesP(image, lines);
 
         //Log.i(TAG, "lines.cols()" + lines.cols());
 
@@ -544,14 +303,16 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 //            Log.i(TAG, "X^1 = " + slope + "\n");
             Imgproc.line(mRgba, new Point(val[0], val[1]), new Point(val[2], val[3]), new Scalar(0, 0, 255), 4);
         }
+        int[][] leftRightLines = average_HoughLinesP(image, lines);
 
-//        for (int i = 0; i < leftRightLines.length; i++) {
-//            int[] line = leftRightLines[i];
-//            if (line == null)
-//                break;
-//            Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(0, 0, 255), 4);
-//
-//        }
+        for (int i = 0; i < leftRightLines.length; i++) {
+            int[] line = leftRightLines[i];
+            if (line == null)
+                continue;
+            Log.i(TAG, "line[0], line[1] line[2], line[3]" + line[0] +", "+ line[1]+", "+  line[2] +", "+  line[3]);
+            Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(255, 0, 0), 4);
+
+        }
         return mRgba;
     }
 
@@ -584,10 +345,10 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         }
 
         //check if there is a missing line, then add dummy line
-        if (left_fit.size() == 0)
-            left_fit.add(new double[]{1, 1});
-        if (right_fit.size() == 0)
-            right_fit.add(new double[]{-1, 0});
+//        if (left_fit.size() == 0)
+//            left_fit.add(new double[]{1, 1});
+//        if (right_fit.size() == 0)
+//            right_fit.add(new double[]{-1, 0});
 
 
 //        left_fit_average = average_slope_intercept(left_fit);
@@ -600,12 +361,19 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         double[] rightAverage = average_slope_intercept(right_fit);
         Log.i(TAG, "Right Slope AVG= " + rightAverage[0] + ", Y-Intercept AVG = " + rightAverage[1] + "\n");
 
+        int[] leftLineCoordinates = {0,0,0,0,0};
+        int[] rightLineCoordinates = {0,0,0,0};
 
-        int[] leftLineCoordinates = make_coordinates(image, leftAverage);
+        if(leftAverage[0] != 0 || leftAverage[1] != 0 ) {
+            leftLineCoordinates = make_coordinates(image, leftAverage);
+            return new int[][]{leftLineCoordinates, {0, 0, 0, 0}};
+        }
+        if(leftAverage[0] != 0 || leftAverage[1] != 0 ) {
+            rightLineCoordinates = make_coordinates(image, rightAverage);
+            return new int[][]{{0, 0, 0, 0}, rightLineCoordinates};
+        }
 
-        int[] rightLineCoordinates = make_coordinates(image, rightAverage);
-
-        return new int[][]{leftLineCoordinates, rightLineCoordinates};
+        return new int[][]{{0,0, 0, 0}, {0, 0, 0,0}};
     }
 
     private int[] make_coordinates(Mat image, double[] average) {
@@ -714,5 +482,44 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
      */
     public native String stringFromJNI();
 
+    public void onOpenSettings(View view) {
 
+        Intent getSettings = new Intent(this, Settings.class);
+        final int result = 1;
+        getSettings.putExtra("Caller", "homepage");
+
+        startActivityForResult(getSettings, result);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        int[] cannySettings  = data.getIntArrayExtra("cannySettings");
+        int[] PolyMaskSettings  = data.getIntArrayExtra("PolyMaskSettings");
+        int[] HoughLinePSettings = data.getIntArrayExtra("HoughLinePSettings");
+
+        String phoneNumber = data.getStringExtra("phoneNumber");
+        String g_Force = data.getStringExtra("gForce");
+        gForce = Integer.parseInt(g_Force);
+        textGforce = findViewById(R.id.g_forceVal);
+
+        if ( g_Force != null)
+            textGforce.setText(g_Force);
+        if (phoneNumber == null)
+            phoneNumber = "+64211484398";
+
+        hough_threshold = HoughLinePSettings[0];
+        hough_minLength= HoughLinePSettings[1];
+        hough_maxGap= HoughLinePSettings[2];
+
+        canny_threshold1 = cannySettings[0];
+        canny_threshold2 = cannySettings[1];
+
+        PolyX1 = PolyMaskSettings[0];
+        PolyX2 = PolyMaskSettings[1];
+        PolyX3 = PolyMaskSettings[2];
+        PolyX4 = PolyMaskSettings[3];
+    }
 }
