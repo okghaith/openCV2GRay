@@ -3,6 +3,7 @@ package com.example.kwt.camera3;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -159,6 +160,9 @@ public class SoundMonitoringInitialize {
        // Toast.makeText(getApplicationContext(), "Noise Thershold Crossed, Amplitude: "+amp + ", DB: "+db,
          //       Toast.LENGTH_LONG).show();
         Log.i("Noise", "==== Noise Threshold Crossed, Amplitude: "+amp + ", DB: "+db+"===");
+
+        Intent intent = new Intent("com.example.kwt.accelerometer.onNoiseThersholdCrossed");
+        ((Activity)context).sendBroadcast(intent);
     }
 
     public void onPause() {
