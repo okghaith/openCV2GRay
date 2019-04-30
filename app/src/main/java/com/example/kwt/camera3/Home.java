@@ -2,7 +2,9 @@ package com.example.kwt.camera3;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -48,8 +50,11 @@ public class Home extends AppCompatActivity {
     private Accelerometer accelerometer;
     private LaneDetection laneDetection;
 
+    public BroadcastReceiver statuslog;
+
     //TextViews
     TextView textGforce;
+    TextView txtstatuslog;
 
     public int gForce;
     String phoneNumber;
@@ -67,11 +72,13 @@ public class Home extends AppCompatActivity {
         Log.i(TAG, "called onCreate");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        txtstatuslog = findViewById(R.id.txtstatuslog);
+
         //Default values
         phoneNumber = "+64211484398";
 
         //Initialize Accelerometer background Service
-        accelerometer =  new Accelerometer(this);
+        accelerometer = new Accelerometer(this);
         accelerometer.InitializeAccelMeter();
 
         //Initialize Microphone monitoring
@@ -82,8 +89,18 @@ public class Home extends AppCompatActivity {
 
         //Start sensorFusionTimer service
         startService(new Intent(this, SensorFusionTimer.class));
-    }
 
+
+        statuslog = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                txtstatuslog.append(intent.getStringExtra("MSGLog") + "\n");
+            }
+        };
+
+        this.registerReceiver(statuslog, new IntentFilter("com.example.kwt.accelerometer.statuslog"));
+    }
 
 
     @Override

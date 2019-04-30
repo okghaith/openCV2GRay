@@ -2,6 +2,7 @@ package com.example.kwt.camera3;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -151,6 +152,12 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
 
     @Override
     public void onCameraViewStarted(int width, int height) {
+
+        //update main home log box
+        Intent intent_msg = new Intent("com.example.kwt.accelerometer.statuslog");
+        intent_msg.putExtra("MSGLog","Camera Initialized");
+        context.sendBroadcast(intent_msg);
+
         //H360:,W:640
         camHeight = height;
         camWidth = width;

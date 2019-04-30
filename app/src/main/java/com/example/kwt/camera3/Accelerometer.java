@@ -35,8 +35,12 @@ public class Accelerometer {
     public void InitializeAccelMeter() {
 
         ((Activity)context).startService(new Intent(context, ShakeService.class));
-        Toast.makeText(context, "ACTIVATED!", Toast.LENGTH_LONG).show();
-        Log.d("MSG", "Activated the Service");
+        Toast.makeText(context, "Accelerometer ACTIVATED!", Toast.LENGTH_LONG).show();
+        Log.d("Accelerometer", "Activated the Accelerometer Service");
+        //update main home log box
+        Intent intent_msg = new Intent("com.example.kwt.accelerometer.statuslog");
+        intent_msg.putExtra("MSGLog","Accelerometer Service Started");
+        context.sendBroadcast(intent_msg);
 
         //Receives X,Y,Z values from ShakerListener broadcast
          sensorXYZUpdate = new BroadcastReceiver() {
