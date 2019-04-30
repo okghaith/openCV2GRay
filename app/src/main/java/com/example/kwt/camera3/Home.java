@@ -47,8 +47,6 @@ import static org.opencv.imgproc.Imgproc.compareHist;
 import static org.opencv.imgproc.Imgproc.fillConvexPoly;
 
 
-//this is ghaith
-
 public class Home extends AppCompatActivity implements CvCameraViewListener2 {
     private static final String TAG = "Home_OpenCVTest";
     private CameraBridgeViewBase mOpenCvCameraView;
@@ -148,7 +146,7 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
     private void blackImgInit() {
         //upload black pic
         InputStream stream = null;
-        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.black_640_360);
+        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.black_image_352_288);
         try {
             stream = getContentResolver().openInputStream(uri);
         } catch (FileNotFoundException e) {
@@ -184,14 +182,13 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
 
     }
 
-
-
     @Override
     protected void onPause() {
         super.onPause();
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
         }
+        soundMonitoringInitialize.onPause();
     }
 
     @Override
@@ -209,7 +206,7 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
     protected void onStop() {
         super.onStop();
         Log.i("Noise", "=++++++++++++++++++++++++++++++++++++++=== onStop (MainActivity)===");
-        soundMonitoringInitialize.onStop();
+       soundMonitoringInitialize.onStop();
     }
 
     @Override
@@ -282,14 +279,12 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
         Utils.matToBitmap(mask, maskBitmap);
         Utils.matToBitmap(masked_canny, masked_cannyBitmap);
 
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 imageView_hough.setImageBitmap(houghBitmap);
             }
         });
-
 
         return mRgba;
     }
@@ -300,7 +295,6 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
 
         //Calculate Lines
         Imgproc.HoughLinesP(image, lines, rho, theta, threshold, minLineLength, maxLineGap);
-
 
         //Log.i(TAG, "lines.cols()" + lines.cols());
 

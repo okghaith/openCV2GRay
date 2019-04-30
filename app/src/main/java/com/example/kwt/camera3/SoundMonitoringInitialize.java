@@ -160,4 +160,11 @@ public class SoundMonitoringInitialize {
          //       Toast.LENGTH_LONG).show();
         Log.i("Noise", "==== Noise Threshold Crossed, Amplitude: "+amp + ", DB: "+db+"===");
     }
+
+    public void onPause() {
+        mSensor.pause();
+
+    }
+
+
 }
