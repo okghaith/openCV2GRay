@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     private void accelInit() {
 
-        //Accel textviews
+        //Accelerometer textviews
         textXval = (TextView) findViewById(R.id.xValue);
         textYval = (TextView) findViewById(R.id.yValue);
         textZval = (TextView) findViewById(R.id.zValue);
