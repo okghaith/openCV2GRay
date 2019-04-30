@@ -1,25 +1,18 @@
 package com.example.kwt.camera3;
 
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,7 +36,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.opencv.imgproc.Imgproc.compareHist;
 import static org.opencv.imgproc.Imgproc.fillConvexPoly;
 
 
@@ -51,6 +43,7 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
     private static final String TAG = "Home_OpenCVTest";
     private CameraBridgeViewBase mOpenCvCameraView;
     private SoundMonitoringInitialize soundMonitoringInitialize;
+    private Accelerometer accelerometer;
 
     //Sensors
     BroadcastReceiver sensorXYZUpdate;
@@ -135,40 +128,12 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
         //Import Black Image and Convert to Bmp
         blackImgInit();
 
-        //Initialize textViews + Register Broadcast Receiver
-        accelInit();
+        //Initialize Accelerometer background Service
+        accelerometer =  new Accelerometer(this);
+        accelerometer.InitializeAccelMeter();
 
+        //Initialize Microphone monitoring
         soundMonitoringInitialize = new SoundMonitoringInitialize(this);
-    }
-
-
-    private void accelInit() {
-
-        //Accel textviews
-        textXval = (TextView) findViewById(R.id.xValue);
-        textYval = (TextView) findViewById(R.id.yValue);
-        textZval = (TextView) findViewById(R.id.zValue);
-        textLongLat = (TextView) findViewById(R.id.LongLat);
-
-
-        startService(new Intent(getApplicationContext(), ShakeService.class));
-        Toast.makeText(Home.this, "ACTIVATED!", Toast.LENGTH_LONG).show();
-        Log.d("MSG", "Activated the Service");
-
-
-        //Receives X,Y,Z values from ShakerListener broadcast
-        BroadcastReceiver sensorXYZUpdate = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                textXval.setText("textXval: " + intent.getExtras().getFloat("textXval"));
-                textYval.setText("textYval: " + intent.getExtras().getFloat("textYval"));
-                textZval.setText("textZval: " + intent.getExtras().getFloat("textZval"));
-            }
-        };
-
-        //Register listener to XYZDATA Intent Broadcast
-        registerReceiver(sensorXYZUpdate, new IntentFilter("com.example.kwt.accelerometer.XYZDATA"));
     }
 
 
