@@ -138,7 +138,6 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
         //Initialize textViews + Register Broadcast Receiver
         accelInit();
 
-
         soundMonitoringInitialize = new SoundMonitoringInitialize(this);
     }
 
@@ -151,8 +150,14 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
         textZval = (TextView) findViewById(R.id.zValue);
         textLongLat = (TextView) findViewById(R.id.LongLat);
 
+
+        startService(new Intent(getApplicationContext(), ShakeService.class));
+        Toast.makeText(Home.this, "ACTIVATED!", Toast.LENGTH_LONG).show();
+        Log.d("MSG", "Activated the Service");
+
+
         //Receives X,Y,Z values from ShakerListener broadcast
-        sensorXYZUpdate = new BroadcastReceiver() {
+        BroadcastReceiver sensorXYZUpdate = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
 

@@ -140,11 +140,6 @@ public class Settings extends AppCompatActivity implements CvCameraViewListener2
 
         //Poly Triangle Seekbars
         polySeekbars();
-
-
-        //Initialize textViews + Register Broadcast Receiver
-        accelInit();
-
     }
 
     private void polySeekbars() {
@@ -255,36 +250,6 @@ public class Settings extends AppCompatActivity implements CvCameraViewListener2
         bmpBlack = BitmapFactory.decodeStream(stream, null, bmpFactoryOptions);
     }
 
-    private void accelInit() {
-
-        //Accel textviews
-        textXval = (TextView) findViewById(R.id.xValue);
-        textYval = (TextView) findViewById(R.id.yValue);
-        textZval = (TextView) findViewById(R.id.zValue);
-        textLongLat = (TextView) findViewById(R.id.LongLat);
-
-
-        startService(new Intent(getApplicationContext(), ShakeService.class));
-        Toast.makeText(Settings.this, "ACTIVATED!", Toast.LENGTH_LONG).show();
-        Log.d("MSG", "Activated the Service");
-
-
-        //Receives X,Y,Z values from ShakerListener broadcast
-        BroadcastReceiver sensorXYZUpdate = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                textXval.setText("textXval: " + intent.getExtras().getFloat("textXval"));
-                textYval.setText("textYval: " + intent.getExtras().getFloat("textYval"));
-                textZval.setText("textZval: " + intent.getExtras().getFloat("textZval"));
-            }
-        };
-
-
-        //Register listener to XYZDATA Intent Broadcast
-        registerReceiver(sensorXYZUpdate, new IntentFilter("com.example.kwt.accelerometer.XYZDATA"));
-
-    }
 
     private void houghLinePSeekbars() {
         seek_hough_threshold = (SeekBar) this.findViewById(R.id.seekBar3);
