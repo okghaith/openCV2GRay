@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class ShakeListener implements SensorListener
 {
-    private static final int FORCE_THRESHOLD = 10000;
+    private static final int FORCE_THRESHOLD = 7000;
     private static final int TIME_THRESHOLD = 75;
     private static final int SHAKE_TIMEOUT = 500;
     private static final int SHAKE_DURATION = 150;

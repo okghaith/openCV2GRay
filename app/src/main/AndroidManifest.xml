@@ -50,6 +50,7 @@
 
 
         <service android:enabled="true" android:name="com.example.kwt.camera3.ShakeService"/>
+        <service android:enabled="true" android:name="com.example.kwt.camera3.SensorFusionTimer"/>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.example.kwt.camera3;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -47,7 +48,6 @@ public class Home extends AppCompatActivity {
     private Accelerometer accelerometer;
     private LaneDetection laneDetection;
 
-
     //TextViews
     TextView textGforce;
 
@@ -79,6 +79,9 @@ public class Home extends AppCompatActivity {
 
         //Initialize Lane Detection
         laneDetection = new LaneDetection(this);
+
+        //Start sensorFusionTimer service
+        startService(new Intent(this, SensorFusionTimer.class));
     }
 
 

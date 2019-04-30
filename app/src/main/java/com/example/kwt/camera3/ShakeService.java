@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 
 public class ShakeService extends Service implements ShakeListener.OnShakeListener {
+    private static final String TAG = "Shake";
+
     private ShakeListener mShaker;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
@@ -28,21 +30,18 @@ public class ShakeService extends Service implements ShakeListener.OnShakeListen
         this.mAccelerometer = this.mSensorManager.getDefaultSensor(1);
         mShaker = new ShakeListener(this);
         mShaker.setOnShakeListener(this);
-        Toast.makeText(ShakeService.this, "Service is created!",Toast.LENGTH_LONG).show();
-        Log.d("MSG", "Created the Service!");
+        Toast.makeText(ShakeService.this, "Shake Service is created!",Toast.LENGTH_LONG).show();
+        Log.d(TAG, "Created the Service!");
         check=1;
     }
     @Override
     public void onShake() {
         if(check==1) {
             Toast.makeText(ShakeService.this, "SHAKEN!", Toast.LENGTH_LONG).show();
-            Log.d("MSG", "Shake Detected");
-            final Vibrator vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            vib.vibrate(500);
-            Intent i = new Intent();
-            i.setClass(this, CheckCertainty.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
+            Log.d(TAG, "Shake Detected");
+
+            Intent intent = new Intent("com.example.kwt.accelerometer.onAccelShake");
+            this.sendBroadcast(intent);
         }
 
     }
@@ -54,6 +53,6 @@ public class ShakeService extends Service implements ShakeListener.OnShakeListen
     public void onDestroy(){
         super.onDestroy();
         check=0;
-        Log.d("MSG","Service Destroyed.");
+        Log.d(TAG,"Service Destroyed.");
     }
 }
