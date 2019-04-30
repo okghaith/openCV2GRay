@@ -143,21 +143,6 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
     }
 
 
-    private void blackImgInit() {
-        //upload black pic
-        InputStream stream = null;
-        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.black_image_352_288);
-        try {
-            stream = getContentResolver().openInputStream(uri);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
-        bmpFactoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
-        //H:360,W:640, https://dummyimage.com/
-        bmpBlack = BitmapFactory.decodeStream(stream, null, bmpFactoryOptions);
-    }
-
     private void accelInit() {
 
         //Accel textviews
@@ -179,8 +164,9 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
 
         //Register listener to XYZDATA Intent Broadcast
         registerReceiver(sensorXYZUpdate, new IntentFilter("com.example.kwt.accelerometer.XYZDATA"));
-
     }
+
+
 
     @Override
     protected void onPause() {
@@ -218,6 +204,22 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
         this.unregisterReceiver(sensorXYZUpdate);
     }
 
+
+
+    private void blackImgInit() {
+        //upload black pic
+        InputStream stream = null;
+        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.black_image_352_288);
+        try {
+            stream = getContentResolver().openInputStream(uri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+        bmpFactoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
+        //H:360,W:640, https://dummyimage.com/
+        bmpBlack = BitmapFactory.decodeStream(stream, null, bmpFactoryOptions);
+    }
     public void onCameraViewStarted(int width, int height) {
         //H360:,W:640
         camHeight = height;
