@@ -10,9 +10,7 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.widget.Toast;
 
-/**
- * Created by anask on 16-04-2016.
- */
+
 public class ShakeService extends Service implements ShakeListener.OnShakeListener {
     private ShakeListener mShaker;
     private SensorManager mSensorManager;
