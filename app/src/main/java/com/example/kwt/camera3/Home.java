@@ -47,6 +47,8 @@ import static org.opencv.imgproc.Imgproc.compareHist;
 import static org.opencv.imgproc.Imgproc.fillConvexPoly;
 
 
+//this is ghaith
+
 public class Home extends AppCompatActivity implements CvCameraViewListener2 {
     private static final String TAG = "Home_OpenCVTest";
     private CameraBridgeViewBase mOpenCvCameraView;
