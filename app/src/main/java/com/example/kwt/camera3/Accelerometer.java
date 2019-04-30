@@ -18,6 +18,8 @@ public class Accelerometer {
     TextView textZval;
     TextView textLongLat;
 
+    BroadcastReceiver sensorXYZUpdate;
+
     public Accelerometer(Context con) {
         Log.i("Accelerometer", "==== Accelerometer Monitoring Object Created ===");
         context = con;
@@ -37,7 +39,7 @@ public class Accelerometer {
         Log.d("MSG", "Activated the Service");
 
         //Receives X,Y,Z values from ShakerListener broadcast
-        BroadcastReceiver sensorXYZUpdate = new BroadcastReceiver() {
+         sensorXYZUpdate = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
 
@@ -49,5 +51,9 @@ public class Accelerometer {
 
         //Register listener to XYZDATA Intent Broadcast
         ((Activity)context).registerReceiver(sensorXYZUpdate, new IntentFilter("com.example.kwt.accelerometer.XYZDATA"));
+    }
+
+    public void onDestroy(){
+        ((Activity)context).unregisterReceiver(sensorXYZUpdate);
     }
 }
