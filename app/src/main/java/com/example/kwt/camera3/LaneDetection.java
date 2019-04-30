@@ -231,10 +231,33 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
 
         //Log.i(TAG, "lines.cols()" + lines.cols());
 
+
+        Mat houghLines = new Mat();
+        houghLines.create(image.rows(), image.cols(), CvType.CV_8UC1);
+
+        //Drawing lines on the image
         for (int i = 0; i < lines.cols(); i++) {
-            double[] val = lines.get(0, i);
+            double[] points = lines.get(0, i);
+            if (points == null)
+                continue;
+
+            double x1, y1, x2, y2;
+
+            x1 = points[0];
+            y1 = points[1];
+            x2 = points[2];
+            y2 = points[3];
+
+            Point pt1 = new Point(x1, y1);
+            Point pt2 = new Point(x2, y2);
+
+            //Drawing lines on an image
+            Imgproc.line(mRgba, pt1, pt2, new Scalar(255, 0, 0), 1);
+        }
+        /*for (int i = 0; i < lines.cols(); i++) {
+            double[] val = lines.get(i, 0);
             if (val == null)
-                break;
+                continue;
             //Log.i(TAG, "val[0], val[1] val[2], val[3]" + val[0] +", "+ val[1]+", "+  val[2] +", "+  val[3]);
 //            double[] parameters  = polyFit_getSlopeIntercept(val);
 //            double slope = parameters[0];
@@ -242,15 +265,28 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
 //
 //            Log.i(TAG, "X^0 = " + intercept + "\n");
 //            Log.i(TAG, "X^1 = " + slope + "\n");
+
+            //Blue Line
             Imgproc.line(mRgba, new Point(val[0], val[1]), new Point(val[2], val[3]), new Scalar(0, 0, 255), 4);
         }
+*/
         int[][] leftRightLines = average_HoughLinesP(image, lines);
+
+        Log.i("leftRight","leftRightLines.length: " + leftRightLines.length);
+
+        if (leftRightLines .length == 0){
+            Intent intent = new Intent("com.example.kwt.accelerometer.onLaneDetectionLost");
+            context.sendBroadcast(intent);
+            Log.i("leftRight", "Left Right Lines = 0, Broadcast sent");
+        }
 
         for (int i = 0; i < leftRightLines.length; i++) {
             int[] line = leftRightLines[i];
+
             if (line == null)
                 continue;
-            Log.i(TAG, "line[0], line[1] line[2], line[3]" + line[0] +", "+ line[1]+", "+  line[2] +", "+  line[3]);
+            Log.i("leftRight", "line[0], line[1] line[2], line[3]" + line[0] +", "+ line[1]+", "+  line[2] +", "+  line[3]);
+            //red color line
             Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(255, 0, 0), 4);
 
         }

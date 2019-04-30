@@ -17,6 +17,7 @@ public class SensorFusionTimer extends Service {
     private static final String TAG = "SensorFusion";
     CountDownTimer countDownTimer;
     public int counter;
+    public int laneLostCounter;
     public BroadcastReceiver sensorFusionUpdate;
     public boolean onLaneDetectionLost = false;
     public boolean onAccelShake = false;
@@ -27,6 +28,7 @@ public class SensorFusionTimer extends Service {
         super.onCreate();
 
         counter = 0;
+        laneLostCounter = 0;
         onLaneDetectionLost = false;
         onAccelShake = false;
         onNoiseThersholdCrossed = false;
@@ -38,7 +40,7 @@ public class SensorFusionTimer extends Service {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals("com.example.kwt.accelerometer.onLaneDetectionLost")) {
 
-                    if(onLaneDetectionLost == false){
+                    if((onLaneDetectionLost == false) && (laneLostCounter > 3)){
                         onLaneDetectionLost = true;
                         counter++;
                     }
@@ -88,6 +90,10 @@ public class SensorFusionTimer extends Service {
         countDownTimer = new CountDownTimer(6000, 1000) {
 
             public void onTick(long millisUntilFinished) {
+                if((millisUntilFinished % 1000) == 0){
+                    laneLostCounter++;
+                }
+
                 if(counter  >= 2) {
                     DetectedEmergency();
                 }
@@ -102,13 +108,14 @@ public class SensorFusionTimer extends Service {
 
             private void DetectedEmergency() {
                 counter = 0;
+                laneLostCounter = 0;
                 final Vibrator vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                    vib.vibrate(500);
-                    Intent i = new Intent();
-                    i.setClass(SensorFusionTimer.this, CheckCertainty.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                    Log.i(TAG, "Emergency Detected!");
+                vib.vibrate(500);
+                Intent i = new Intent();
+                i.setClass(SensorFusionTimer.this, CheckCertainty.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                Log.i(TAG, "Emergency Detected!");
                 //update main home log box
                 Intent intent_msg = new Intent("com.example.kwt.accelerometer.statuslog");
                 intent_msg.putExtra("MSGLog","Emergency Detected!");
@@ -133,10 +140,11 @@ public class SensorFusionTimer extends Service {
     public void start(){
         Log.i(TAG, "SensorFusionTimer Started");
         //update main home log box
-        Intent intent_msg = new Intent("com.example.kwt.accelerometer.statuslog");
+        /*Intent intent_msg = new Intent("com.example.kwt.accelerometer.statuslog");
         intent_msg.putExtra("MSGLog","SensorFusionTimer Started");
-        this.sendBroadcast(intent_msg);
+        this.sendBroadcast(intent_msg);*/
         counter = 0;
+        laneLostCounter = 0;
         onLaneDetectionLost = false;
         onAccelShake = false;
         onNoiseThersholdCrossed = false;
