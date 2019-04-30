@@ -124,6 +124,16 @@
             android:visibility="visible"
             tools:text="Initializing Lane Detection.....\nLane Detection Activated\nInitializing Accelerometer......\nAccelerometer Activated Successfully....\nStart GPS Monitoring.....\nGPS Satellite Lock..............\nGPS Signals Received Successfully\nActivating Microphone.....\nSystem Ready and Waiting for Anamoly........\n\nWarning: Lane Missing!\n15 seconds Timer started.....\nWarning:High G-Force Detected!\nWarning:High Audio Db detected!\nCrash Detected\nSending Emergency Help SMS + GPS Coordinates " />
 
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:text="stopped"/>
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:text="Settings" android:onClick="onOpenSettings" />
