@@ -117,12 +117,11 @@
         <TextView
             android:id="@+id/txtstatuslog"
             android:layout_width="match_parent"
-            android:background="@drawable/back"
             android:layout_height="270dp"
             android:layout_margin="15dp"
-            android:text="Initializing Lane Detection.....\nLane Detection Activated\nInitializing Accelerometer......\nAccelerometer Activated Successfully....\nStart GPS Monitoring.....\nGPS Satellite Lock..............\nGPS Signals Received Successfully\nActivating Microphone.....\nSystem Ready and Waiting for Anamoly........\n\nWarning: Lane Missing!\n15 seconds Timer started.....\nWarning:High G-Force Detected!\nWarning:High Audio Db detected!\nCrash Detected\nSending Emergency Help SMS + GPS Coordinates "
-            android:visibility="visible"
-            tools:text="Initializing Lane Detection.....\nLane Detection Activated\nInitializing Accelerometer......\nAccelerometer Activated Successfully....\nStart GPS Monitoring.....\nGPS Satellite Lock..............\nGPS Signals Received Successfully\nActivating Microphone.....\nSystem Ready and Waiting for Anamoly........\n\nWarning: Lane Missing!\n15 seconds Timer started.....\nWarning:High G-Force Detected!\nWarning:High Audio Db detected!\nCrash Detected\nSending Emergency Help SMS + GPS Coordinates " />
+            android:background="@drawable/back"
+            android:scrollbars="vertical"
+            android:visibility="visible" />
 
 
         <TextView

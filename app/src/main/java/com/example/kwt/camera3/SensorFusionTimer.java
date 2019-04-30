@@ -44,6 +44,11 @@ public class SensorFusionTimer extends Service {
                     }
                     Log.i(TAG, "onLaneDetectionLost Detected! counter: " + counter);
 
+                    //update main home log box
+                    Intent intent_msg = new Intent("com.example.kwt.accelerometer.statuslog");
+                    intent_msg.putExtra("MSGLog","Lane Detection Lost! counter: " + counter);
+                    context.sendBroadcast(intent_msg);
+
                 }
                 else if (intent.getAction().equals("com.example.kwt.accelerometer.onNoiseThersholdCrossed")) {
 
@@ -52,6 +57,11 @@ public class SensorFusionTimer extends Service {
                         counter++;
                     }
                     Log.i(TAG, "onNoiseThersholdCrossed Detected! counter: " + counter);
+
+                    //update main home log box
+                    Intent intent_msg = new Intent("com.example.kwt.accelerometer.statuslog");
+                    intent_msg.putExtra("MSGLog","Noise Thershold Cross Detected! counter: " + counter);
+                    context.sendBroadcast(intent_msg);
                 }
                 else if (intent.getAction().equals("com.example.kwt.accelerometer.onAccelShake")) {
                     if(onAccelShake == false){
@@ -61,6 +71,10 @@ public class SensorFusionTimer extends Service {
                     onAccelShake = true;
                     Log.i(TAG, "onAccelShake Detected! counter: " + counter);
 
+                    //update main home log box
+                    Intent intent_msg = new Intent("com.example.kwt.accelerometer.statuslog");
+                    intent_msg.putExtra("MSGLog","Shake Detected! counter: " + counter);
+                    context.sendBroadcast(intent_msg);
                 }
             }
 
@@ -95,6 +109,10 @@ public class SensorFusionTimer extends Service {
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     Log.i(TAG, "Emergency Detected!");
+                //update main home log box
+                Intent intent_msg = new Intent("com.example.kwt.accelerometer.statuslog");
+                intent_msg.putExtra("MSGLog","Emergency Detected!");
+                SensorFusionTimer.this.sendBroadcast(intent_msg);
             }
         };//end of CountDownTimer
 
@@ -105,11 +123,19 @@ public class SensorFusionTimer extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Toast.makeText(this, "SensorFusion Service is created!",Toast.LENGTH_LONG).show();
+        //update main home log box
+        Intent intent_msg = new Intent("com.example.kwt.accelerometer.statuslog");
+        intent_msg.putExtra("MSGLog","SensorFusion Service is created!");
+        this.sendBroadcast(intent_msg);
         return null;
     }
 
     public void start(){
         Log.i(TAG, "SensorFusionTimer Started");
+        //update main home log box
+        Intent intent_msg = new Intent("com.example.kwt.accelerometer.statuslog");
+        intent_msg.putExtra("MSGLog","SensorFusionTimer Started");
+        this.sendBroadcast(intent_msg);
         counter = 0;
         onLaneDetectionLost = false;
         onAccelShake = false;
