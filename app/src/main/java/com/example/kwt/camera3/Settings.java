@@ -243,7 +243,7 @@ public class Settings extends AppCompatActivity implements CvCameraViewListener2
     private void blackImgInit() {
         //upload black pic
         InputStream stream = null;
-        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.black_640_360);
+        Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.drawable.black_image_352_288);
         try {
             stream = getContentResolver().openInputStream(uri);
         } catch (FileNotFoundException e) {

@@ -46,6 +46,20 @@ class SoundMeter {
         }
     }
 
+    public void pause(){
+        releaseMediaRecorder();
+    }
+
+
+    private void releaseMediaRecorder(){
+        if (mRecorder != null) {
+            // clear recorder configuration
+            mRecorder.reset();
+            // release the recorder object
+            mRecorder.release();
+            mRecorder = null;
+        }
+    }
 
     public double getAmplitudeDb(double amp) {
         if (mRecorder != null){
