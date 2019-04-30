@@ -22,10 +22,10 @@ class SoundLevelView extends View {
     public SoundLevelView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mGreen = context.getResources().getDrawable(
-                R.drawable.greenbar);
-        mRed = context.getResources().getDrawable(
-                R.drawable.redbar);
+//        mGreen = context.getResources().getDrawable(
+//                R.drawable.greenbar);
+//        mRed = context.getResources().getDrawable(
+//                R.drawable.redbar);
 
         mWidth = mGreen.getIntrinsicWidth();
         setMinimumWidth(mWidth * 10);

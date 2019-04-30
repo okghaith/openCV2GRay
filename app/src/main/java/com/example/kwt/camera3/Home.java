@@ -50,6 +50,7 @@ import static org.opencv.imgproc.Imgproc.fillConvexPoly;
 public class Home extends AppCompatActivity implements CvCameraViewListener2 {
     private static final String TAG = "Home_OpenCVTest";
     private CameraBridgeViewBase mOpenCvCameraView;
+    private SoundMonitoringInitialize soundMonitoringInitialize;
 
     //Sensors
     BroadcastReceiver sensorXYZUpdate;
@@ -136,6 +137,9 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
 
         //Initialize textViews + Register Broadcast Receiver
         accelInit();
+
+
+        soundMonitoringInitialize = new SoundMonitoringInitialize(this);
     }
 
 
@@ -196,6 +200,14 @@ public class Home extends AppCompatActivity implements CvCameraViewListener2 {
         } else {
             mLoaderCallback.onManagerConnected(BaseLoaderCallback.SUCCESS);
         }
+        soundMonitoringInitialize.onResume();
+
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i("Noise", "=++++++++++++++++++++++++++++++++++++++=== onStop (MainActivity)===");
+        soundMonitoringInitialize.onStop();
     }
 
     @Override
