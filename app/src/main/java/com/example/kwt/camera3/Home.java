@@ -49,7 +49,6 @@ public class Home extends AppCompatActivity {
     private SoundMonitoringInitialize soundMonitoringInitialize;
     private Accelerometer accelerometer;
     private LaneDetection laneDetection;
-
     public BroadcastReceiver statuslog;
 
     //TextViews

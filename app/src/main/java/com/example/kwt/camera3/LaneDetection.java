@@ -223,26 +223,25 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
     }
 
 
-    public Mat getHoughPTransform(Mat image, double rho, double theta, int threshold, double minLineLength, double maxLineGap) {
-        Mat lines = new Mat();
+    public Mat getHoughPTransform(Mat masked_canny, double rho, double theta, int threshold, double minLineLength, double maxLineGap) {
 
+        Mat lines = new Mat();
         //Calculate Lines
-        Imgproc.HoughLinesP(image, lines, rho, theta, threshold, minLineLength, maxLineGap);
+        Imgproc.HoughLinesP(masked_canny, lines, rho, theta, threshold, minLineLength, maxLineGap);
+
 
         //Log.i(TAG, "lines.cols()" + lines.cols());
-
+        Log.i(TAG+"1", "Shape: " + lines.size() + ", lines.cols(): "+ lines.cols() +",lines.rows():"+lines.rows()+"\n lines.dump() = " + lines.dump());
 
         Mat houghLines = new Mat();
-        houghLines.create(image.rows(), image.cols(), CvType.CV_8UC1);
+        houghLines.create(masked_canny.rows(), masked_canny.cols(), CvType.CV_8UC1);
 
         //Drawing lines on the image
-        for (int i = 0; i < lines.cols(); i++) {
-            double[] points = lines.get(0, i);
+        for (int i = 0; i < lines.rows(); i++) {
+            double[] points = lines.get(i, 0);
             if (points == null)
                 continue;
-
             double x1, y1, x2, y2;
-
             x1 = points[0];
             y1 = points[1];
             x2 = points[2];
@@ -251,30 +250,16 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
             Point pt1 = new Point(x1, y1);
             Point pt2 = new Point(x2, y2);
 
-            //Drawing lines on an image
-            Imgproc.line(mRgba, pt1, pt2, new Scalar(255, 0, 0), 1);
+            //Drawing Green lines on an image
+            Imgproc.line(mRgba, pt1, pt2, new Scalar(0, 255, 0), 1);
         }
-        /*for (int i = 0; i < lines.cols(); i++) {
-            double[] val = lines.get(i, 0);
-            if (val == null)
-                continue;
-            //Log.i(TAG, "val[0], val[1] val[2], val[3]" + val[0] +", "+ val[1]+", "+  val[2] +", "+  val[3]);
-//            double[] parameters  = polyFit_getSlopeIntercept(val);
-//            double slope = parameters[0];
-//            double intercept = parameters[1];
-//
-//            Log.i(TAG, "X^0 = " + intercept + "\n");
-//            Log.i(TAG, "X^1 = " + slope + "\n");
 
-            //Blue Line
-            Imgproc.line(mRgba, new Point(val[0], val[1]), new Point(val[2], val[3]), new Scalar(0, 0, 255), 4);
-        }
-*/
-        int[][] leftRightLines = average_HoughLinesP(image, lines);
+
+      /*  int[][] leftRightLines = average_HoughLinesP(masked_canny, lines);
 
         Log.i("leftRight","leftRightLines.length: " + leftRightLines.length);
 
-        if (leftRightLines .length == 0){
+        if (leftRightLines .length == 0){ //BUG: Always false, since average_HoughLinesP always return 2 elements
             Intent intent = new Intent("com.example.kwt.accelerometer.onLaneDetectionLost");
             context.sendBroadcast(intent);
             Log.i("leftRight", "Left Right Lines = 0, Broadcast sent");
@@ -285,11 +270,11 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
 
             if (line == null)
                 continue;
-            Log.i("leftRight", "line[0], line[1] line[2], line[3]" + line[0] +", "+ line[1]+", "+  line[2] +", "+  line[3]);
+            Log.i("leftRight", "line[0], line[1] line[2], line[3]: " + line[0] +", "+ line[1]+", "+  line[2] +", "+  line[3]);
             //red color line
-            Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(255, 0, 0), 4);
+            Imgproc.line(houghLines, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(255, 0, 0), 4);
 
-        }
+        }*/
         return mRgba;
     }
 
@@ -338,19 +323,19 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
         double[] rightAverage = average_slope_intercept(right_fit);
         Log.i(TAG, "Right Slope AVG= " + rightAverage[0] + ", Y-Intercept AVG = " + rightAverage[1] + "\n");
 
-        int[] leftLineCoordinates = {0,0,0,0,0};
+        int[] leftLineCoordinates =  {0,0,0,0};
         int[] rightLineCoordinates = {0,0,0,0};
 
         if(leftAverage[0] != 0 || leftAverage[1] != 0 ) {
             leftLineCoordinates = make_coordinates(image, leftAverage);
-            return new int[][]{leftLineCoordinates, {0, 0, 0, 0}};
+//            return new int[][]{leftLineCoordinates, {0, 0, 0, 0}};
         }
         if(leftAverage[0] != 0 || leftAverage[1] != 0 ) {
             rightLineCoordinates = make_coordinates(image, rightAverage);
-            return new int[][]{{0, 0, 0, 0}, rightLineCoordinates};
+  //          return new int[][]{{0, 0, 0, 0}, rightLineCoordinates};
         }
 
-        return new int[][]{{0,0, 0, 0}, {0, 0, 0,0}};
+        return new int[][]{leftLineCoordinates, rightLineCoordinates};
     }
 
     private int[] make_coordinates(Mat image, double[] average) {
