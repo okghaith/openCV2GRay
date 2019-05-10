@@ -27,6 +27,7 @@ import org.opencv.imgproc.Imgproc;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.opencv.imgproc.Imgproc.fillConvexPoly;
@@ -229,12 +230,7 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
         //Calculate Lines
         Imgproc.HoughLinesP(masked_canny, lines, rho, theta, threshold, minLineLength, maxLineGap);
 
-
-        //Log.i(TAG, "lines.cols()" + lines.cols());
         Log.i(TAG+"1", "Shape: " + lines.size() + ", lines.cols(): "+ lines.cols() +",lines.rows():"+lines.rows()+"\n lines.dump() = " + lines.dump());
-
-        Mat houghLines = new Mat();
-        houghLines.create(masked_canny.rows(), masked_canny.cols(), CvType.CV_8UC1);
 
         //Drawing lines on the image
         for (int i = 0; i < lines.rows(); i++) {
@@ -251,30 +247,31 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
             Point pt2 = new Point(x2, y2);
 
             //Drawing Green lines on an image
-            Imgproc.line(mRgba, pt1, pt2, new Scalar(0, 255, 0), 1);
+            Imgproc.line(mRgba, pt1, pt2, new Scalar(0, 255, 0), 2);
         }
 
 
-      /*  int[][] leftRightLines = average_HoughLinesP(masked_canny, lines);
+        int[][] avgLeftRightLines = average_HoughLinesP(mRgba, lines);
 
-        Log.i("leftRight","leftRightLines.length: " + leftRightLines.length);
+        Log.i("leftRight","leftRightLines.length: " + avgLeftRightLines.length);
 
-        if (leftRightLines .length == 0){ //BUG: Always false, since average_HoughLinesP always return 2 elements
+        if (avgLeftRightLines .length == 0){ //BUG: Always false, since average_HoughLinesP always return 2 elements
             Intent intent = new Intent("com.example.kwt.accelerometer.onLaneDetectionLost");
             context.sendBroadcast(intent);
             Log.i("leftRight", "Left Right Lines = 0, Broadcast sent");
         }
 
-        for (int i = 0; i < leftRightLines.length; i++) {
-            int[] line = leftRightLines[i];
+        for (int i = 0; i < avgLeftRightLines.length; i++) {
+            int[] line = avgLeftRightLines[i];
+
+            Log.i("leftRight"+"1", Arrays.toString(line));
 
             if (line == null)
                 continue;
-            Log.i("leftRight", "line[0], line[1] line[2], line[3]: " + line[0] +", "+ line[1]+", "+  line[2] +", "+  line[3]);
             //red color line
-            Imgproc.line(houghLines, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(255, 0, 0), 4);
+            Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(255, 0, 0), 3);
 
-        }*/
+        }
         return mRgba;
     }
 
@@ -283,25 +280,27 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
         //because of the inverse cartesian coordinate, lines on the left will
         //have negative slope and lines on right positive slope
 
-        ArrayList<double[]> left_fit = new ArrayList<double[]>();
-        ArrayList<double[]> right_fit = new ArrayList<double[]>();
+        ArrayList<double[]> left_fit_lines = new ArrayList<double[]>();
+        ArrayList<double[]> right_fit_lines = new ArrayList<double[]>();
         double[] left_fit_average;
         double[] right_fit_average;
 
-        for (int i = 0; i < lines.cols(); i++) {
-            double[] twoPoints = lines.get(0, i);
+        for (int i = 0; i < lines.rows(); i++) {
+            double[] line = lines.get(i, 0);
 
-            if (twoPoints == null)
+            if (line == null)
                 continue; //prevent crash when calculating slopeIntercept polynomial regression
 
-            double[] parameters = polyFit_getSlopeIntercept(twoPoints);
-            double slope = parameters[0];
-            double intercept = parameters[1];
+            double[] parameters = polyFit_getSlopeIntercept(line);
+            double intercept = parameters[0];
+            double slope = parameters[1];
+
+            Log.i(TAG+"1", "Line: "+ Arrays.toString(line)+", Slope:"+ slope + ", Intercept:"+ intercept);
 
             if (slope < 0)
-                left_fit.add(new double[]{slope, intercept});
+                left_fit_lines.add(new double[]{slope, intercept});
             else
-                right_fit.add(new double[]{slope, intercept});
+                right_fit_lines.add(new double[]{slope, intercept});
 //            Log.i(TAG, "X^0 = " + intercept + "\n");
 //            Log.i(TAG, "X^1 = " + slope + "\n");
         }
@@ -313,14 +312,11 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
 //            right_fit.add(new double[]{-1, 0});
 
 
-//        left_fit_average = average_slope_intercept(left_fit);
-//        right_fit_average = average_slope_intercept(right_fit);
 
-
-        double[] leftAverage = average_slope_intercept(left_fit);
+        double[] leftAverage = average_slope_intercept(left_fit_lines);
         Log.i(TAG, "Left Slope AVG= " + leftAverage[0] + ", Y-Intercept AVG = " + leftAverage[1] + "\n");
 
-        double[] rightAverage = average_slope_intercept(right_fit);
+        double[] rightAverage = average_slope_intercept(right_fit_lines);
         Log.i(TAG, "Right Slope AVG= " + rightAverage[0] + ", Y-Intercept AVG = " + rightAverage[1] + "\n");
 
         int[] leftLineCoordinates =  {0,0,0,0};
@@ -328,19 +324,22 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
 
         if(leftAverage[0] != 0 || leftAverage[1] != 0 ) {
             leftLineCoordinates = make_coordinates(image, leftAverage);
-//            return new int[][]{leftLineCoordinates, {0, 0, 0, 0}};
         }
-        if(leftAverage[0] != 0 || leftAverage[1] != 0 ) {
+        if(rightAverage[0] != 0 || rightAverage[1] != 0 ) {
             rightLineCoordinates = make_coordinates(image, rightAverage);
-  //          return new int[][]{{0, 0, 0, 0}, rightLineCoordinates};
         }
+
+        Log.i("leftRight"+"2", "leftLineCoordinates" + Arrays.toString(leftLineCoordinates));
+        Log.i("leftRight"+"2", "rightLineCoordinates" + Arrays.toString(rightLineCoordinates));
 
         return new int[][]{leftLineCoordinates, rightLineCoordinates};
     }
 
     private int[] make_coordinates(Mat image, double[] average) {
-        int y1 = image.height();
-        int y2 = (int) (y1 * 4 / 5);
+
+        //Log.i("make_coordinates", "rightLineCoordinates" + Arrays.toString(rightLineCoordinates));
+        int y1 = image.height(); //height (bottom of the image)
+        int y2 = (int) (y1 * 2 / 5);
         int x1 = (int) ((y1 - average[1]) / average[0]);
         int x2 = (int) ((y2 - average[1]) / average[0]);
 
@@ -369,6 +368,7 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
     }
 
     // From: https://www.bragitoff.com/2017/04/polynomial-fitting-java-codeprogram-works-android-well/
+    // return {Intercept, Slope}
     private double[] polyFit_getSlopeIntercept(double[] twoPoints) {
 
         System.out.print("polyfit Run\n");
