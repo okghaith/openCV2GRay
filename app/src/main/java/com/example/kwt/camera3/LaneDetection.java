@@ -85,15 +85,15 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
         };
 
         //set default values
-        hough_threshold = 70;
-        hough_minLength= 35;
-        hough_maxGap= 22;
-        canny_threshold1 = 70;
-        canny_threshold2 = 70;
-        PolyX1 = 300;
-        PolyX2 = 200;
-        PolyX3 = 70;
-        PolyX4 = 125;
+        hough_threshold = 50;
+        hough_minLength= 60;
+        hough_maxGap= 80;
+        canny_threshold1 = 100;
+        canny_threshold2 = 150;
+        PolyX1 = 400;
+        PolyX2 = 190;
+        PolyX3 = 0;
+        PolyX4 = 52;
 
 
         //Set OpenCV View Visibility and Listener
