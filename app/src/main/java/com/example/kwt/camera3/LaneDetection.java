@@ -232,7 +232,7 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
 
         Log.i(TAG+"1", "Shape: " + lines.size() + ", lines.cols(): "+ lines.cols() +",lines.rows():"+lines.rows()+"\n lines.dump() = " + lines.dump());
 
-        //Drawing lines on the image
+        //Drawing Green lines on the image
         for (int i = 0; i < lines.rows(); i++) {
             double[] points = lines.get(i, 0);
             if (points == null)
@@ -247,30 +247,35 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
             Point pt2 = new Point(x2, y2);
 
             //Drawing Green lines on an image
-            Imgproc.line(mRgba, pt1, pt2, new Scalar(0, 255, 0), 2);
+            Imgproc.line(mRgba, pt1, pt2, new Scalar(0, 255, 0), 1);
         }
 
-
+        //Draw Red Average Line
         int[][] avgLeftRightLines = average_HoughLinesP(mRgba, lines);
 
         Log.i("leftRight","leftRightLines.length: " + avgLeftRightLines.length);
 
-        if (avgLeftRightLines .length == 0){ //BUG: Always false, since average_HoughLinesP always return 2 elements
-            Intent intent = new Intent("com.example.kwt.accelerometer.onLaneDetectionLost");
-            context.sendBroadcast(intent);
-            Log.i("leftRight", "Left Right Lines = 0, Broadcast sent");
-        }
+        int[] emptyLine = {0,0,0,0};
+        int emptyLineCount = 0;
 
         for (int i = 0; i < avgLeftRightLines.length; i++) {
             int[] line = avgLeftRightLines[i];
 
             Log.i("leftRight"+"1", Arrays.toString(line));
 
-            if (line == null)
+            if(line == emptyLine){
+                emptyLineCount++;
                 continue;
+            }
+
             //red color line
             Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(255, 0, 0), 3);
+        }
 
+        if (emptyLineCount == 2){
+            Intent intent = new Intent("com.example.kwt.accelerometer.onLaneDetectionLost");
+            context.sendBroadcast(intent);
+            Log.i("leftRight", "Left Right Lines = 0, Broadcast sent");
         }
         return mRgba;
     }
