@@ -302,20 +302,18 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
 
             Log.i(TAG+"1", "Line: "+ Arrays.toString(line)+", Slope:"+ slope + ", Intercept:"+ intercept);
 
-            if (slope < 0)
+            if (slope < -0.2 ) //ignore horizantal lines
                 left_fit_lines.add(new double[]{slope, intercept});
-            else
+            else if(slope > 0.2) //ignore horizantal lines
                 right_fit_lines.add(new double[]{slope, intercept});
-//            Log.i(TAG, "X^0 = " + intercept + "\n");
-//            Log.i(TAG, "X^1 = " + slope + "\n");
+            else {
+                //left_fit_lines.add(new double[]{0, 0});
+                //right_fit_lines.add(new double[]{0, 0});
+                Log.i(TAG+"_CrntLine", "Ignored Line\n");
+            }
+            Log.i(TAG+"_CrntLine", "X^0(Intercept-Y) = " + intercept + ", X^1(Slope M) = " + slope + "\n");
+
         }
-
-        //check if there is a missing line, then add dummy line
-//        if (left_fit.size() == 0)
-//            left_fit.add(new double[]{1, 1});
-//        if (right_fit.size() == 0)
-//            right_fit.add(new double[]{-1, 0});
-
 
 
         double[] leftAverage = average_slope_intercept(left_fit_lines);
