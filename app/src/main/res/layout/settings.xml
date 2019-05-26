@@ -125,7 +125,8 @@
             android:id="@+id/seekBar1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="200" />
+            android:max="200"
+            android:progress="100" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -140,11 +141,13 @@
             android:layout_height="wrap_content"
             android:text="Threshold 2" />
         </LinearLayout>
+
         <SeekBar
             android:id="@+id/seekBar2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="200" />
+            android:max="200"
+            android:progress="150" />
 
 
         <Space
@@ -189,7 +192,9 @@
         <SeekBar
             android:id="@+id/seekBarX1Poly"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:max="900"
+            android:progress="350" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -208,7 +213,9 @@
         <SeekBar
             android:id="@+id/seekBarX2Poly"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:max="900"
+            android:progress="190" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -245,7 +252,9 @@
         <SeekBar
             android:id="@+id/seekBarX4Poly"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:max="900"
+            android:progress="60" />
 
         <Space
             android:layout_width="match_parent"
@@ -311,7 +320,8 @@
             android:id="@+id/seekBar3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="200" />
+            android:max="200"
+            android:progress="50" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -331,7 +341,8 @@
             android:id="@+id/seekBar4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="200" />
+            android:max="200"
+            android:progress="60" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -346,11 +357,13 @@
             android:layout_height="wrap_content"
             android:text="maxLineGapVal" />
     </LinearLayout>
+
         <SeekBar
             android:id="@+id/seekBar5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="200" />
+            android:max="200"
+            android:progress="80" />
 
         <Space
             android:layout_width="match_parent"

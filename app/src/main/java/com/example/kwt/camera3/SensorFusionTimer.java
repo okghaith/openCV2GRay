@@ -40,7 +40,7 @@ public class SensorFusionTimer extends Service {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals("com.example.kwt.accelerometer.onLaneDetectionLost")) {
 
-                    if((onLaneDetectionLost == false) && (laneLostCounter > 3)){
+                    if((onLaneDetectionLost == false)){
                         onLaneDetectionLost = true;
                         counter++;
                     }
@@ -87,20 +87,20 @@ public class SensorFusionTimer extends Service {
         this.registerReceiver(sensorFusionUpdate, new IntentFilter("com.example.kwt.accelerometer.onAccelShake"));
 
 
-        countDownTimer = new CountDownTimer(6000, 1000) {
+        countDownTimer = new CountDownTimer(7000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 if((millisUntilFinished % 1000) == 0){
                     laneLostCounter++;
                 }
 
-                if(counter  >= 2) {
+                if(counter  >= 3) {
                     DetectedEmergency();
                 }
             }
 
             public void onFinish() {
-                if(counter  >= 2) {
+                if(counter  >= 3) {
                     DetectedEmergency();
                 }
                 SensorFusionTimer.this.start(); //restart timer

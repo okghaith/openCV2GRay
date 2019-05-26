@@ -85,15 +85,15 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
         };
 
         //set default values
-        hough_threshold = 70;
-        hough_minLength= 35;
-        hough_maxGap= 22;
-        canny_threshold1 = 70;
-        canny_threshold2 = 70;
-        PolyX1 = 300;
-        PolyX2 = 200;
-        PolyX3 = 70;
-        PolyX4 = 125;
+        hough_threshold = 50;
+        hough_minLength= 60;
+        hough_maxGap= 80;
+        canny_threshold1 = 100;
+        canny_threshold2 = 150;
+        PolyX1 = 400;
+        PolyX2 = 190;
+        PolyX3 = 0;
+        PolyX4 = 52;
 
 
         //Set OpenCV View Visibility and Listener
@@ -232,7 +232,7 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
 
         Log.i(TAG+"1", "Shape: " + lines.size() + ", lines.cols(): "+ lines.cols() +",lines.rows():"+lines.rows()+"\n lines.dump() = " + lines.dump());
 
-        //Drawing lines on the image
+        //Drawing Green lines on the image
         for (int i = 0; i < lines.rows(); i++) {
             double[] points = lines.get(i, 0);
             if (points == null)
@@ -247,30 +247,37 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
             Point pt2 = new Point(x2, y2);
 
             //Drawing Green lines on an image
-            Imgproc.line(mRgba, pt1, pt2, new Scalar(0, 255, 0), 2);
+            Imgproc.line(mRgba, pt1, pt2, new Scalar(0, 255, 0), 1);
         }
 
-
+        //Draw Red Average Line
         int[][] avgLeftRightLines = average_HoughLinesP(mRgba, lines);
 
         Log.i("leftRight","leftRightLines.length: " + avgLeftRightLines.length);
 
-        if (avgLeftRightLines .length == 0){ //BUG: Always false, since average_HoughLinesP always return 2 elements
-            Intent intent = new Intent("com.example.kwt.accelerometer.onLaneDetectionLost");
-            context.sendBroadcast(intent);
-            Log.i("leftRight", "Left Right Lines = 0, Broadcast sent");
-        }
+        int[] emptyLine = {0,0,0,0};
+        int emptyLineCount = 0;
 
+        //just 2 lines
         for (int i = 0; i < avgLeftRightLines.length; i++) {
             int[] line = avgLeftRightLines[i];
 
-            Log.i("leftRight"+"1", Arrays.toString(line));
+            Log.i("leftRight1", Arrays.toString(line));
 
-            if (line == null)
+            if(Arrays.equals(line, emptyLine)){
+                emptyLineCount++;
+                Log.i("leftRightEmpty", "emptyLineCount = "+emptyLineCount+ "\n");
                 continue;
+            }
             //red color line
             Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(255, 0, 0), 3);
+        }
 
+        //if we are missing 2 lanes, ALERT
+        if (emptyLineCount == 2){
+            Intent intent = new Intent("com.example.kwt.accelerometer.onLaneDetectionLost");
+            context.sendBroadcast(intent);
+            Log.i("leftRightEmpty", "Left Right Lines = 0, Broadcast sent");
         }
         return mRgba;
     }
@@ -297,20 +304,18 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
 
             Log.i(TAG+"1", "Line: "+ Arrays.toString(line)+", Slope:"+ slope + ", Intercept:"+ intercept);
 
-            if (slope < 0)
+            if (slope < -0.2 ) //ignore horizantal lines
                 left_fit_lines.add(new double[]{slope, intercept});
-            else
+            else if(slope > 0.2) //ignore horizantal lines
                 right_fit_lines.add(new double[]{slope, intercept});
-//            Log.i(TAG, "X^0 = " + intercept + "\n");
-//            Log.i(TAG, "X^1 = " + slope + "\n");
+            else {
+                //left_fit_lines.add(new double[]{0, 0});
+                //right_fit_lines.add(new double[]{0, 0});
+                Log.i(TAG+"_CrntLine", "Ignored Line\n");
+            }
+            Log.i(TAG+"_CrntLine", "X^0(Intercept-Y) = " + intercept + ", X^1(Slope M) = " + slope + "\n");
+
         }
-
-        //check if there is a missing line, then add dummy line
-//        if (left_fit.size() == 0)
-//            left_fit.add(new double[]{1, 1});
-//        if (right_fit.size() == 0)
-//            right_fit.add(new double[]{-1, 0});
-
 
 
         double[] leftAverage = average_slope_intercept(left_fit_lines);

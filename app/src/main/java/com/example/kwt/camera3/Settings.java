@@ -144,9 +144,9 @@ public class Settings extends AppCompatActivity implements CvCameraViewListener2
 
     private void polySeekbars() {
         seekBarX1Poly = findViewById(R.id.seekBarX1Poly);
-        seekBarX1Poly.setMax(900);
         textViewPolyX1 = findViewById(R.id.textViewPolyX1);
         textViewPolyX1.setText(seekBarX1Poly.getProgress() + " / " + seekBarX1Poly.getMax());
+        PolyX1 = seekBarX1Poly.getProgress(); //inital value from xml default progress
         seekBarX1Poly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -166,9 +166,9 @@ public class Settings extends AppCompatActivity implements CvCameraViewListener2
         });
 
         seekBarX2Poly = findViewById(R.id.seekBarX2Poly);
-        seekBarX2Poly.setMax(900);
         textViewPolyX2 = findViewById(R.id.textViewPolyX2);
         textViewPolyX2.setText(seekBarX2Poly.getProgress() + " / " + seekBarX2Poly.getMax());
+        PolyX2 = seekBarX2Poly.getProgress(); //inital value from xml default progress
         seekBarX2Poly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -189,9 +189,9 @@ public class Settings extends AppCompatActivity implements CvCameraViewListener2
 
 
         seekBarX3Poly = findViewById(R.id.seekBarX3Poly);
-        seekBarX3Poly.setMax(900);
         textViewPolyX3 = findViewById(R.id.textViewPolyX3);
         textViewPolyX3.setText(seekBarX3Poly.getProgress() + " / " + seekBarX3Poly.getMax());
+        PolyX3 = seekBarX3Poly.getProgress(); //inital value from xml default progress
         seekBarX3Poly.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -265,6 +265,7 @@ public class Settings extends AppCompatActivity implements CvCameraViewListener2
         text_hough_maxGap = (TextView) findViewById(R.id.textView5);
         text_hough_maxGap.setText(seek_hough_maxGap.getProgress() + " / " + seek_hough_maxGap.getMax());
 
+        hough_threshold= seek_hough_threshold.getProgress(); //inital value from xml default progress
         seek_hough_threshold.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -282,7 +283,7 @@ public class Settings extends AppCompatActivity implements CvCameraViewListener2
 
             }
         });
-
+        hough_minLength = seek_hough_minLength.getProgress(); //inital value from xml default progress
         seek_hough_minLength.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -300,7 +301,7 @@ public class Settings extends AppCompatActivity implements CvCameraViewListener2
 
             }
         });
-
+        hough_maxGap = seek_hough_maxGap.getProgress(); //inital value from xml default progress
         seek_hough_maxGap.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -330,6 +331,7 @@ public class Settings extends AppCompatActivity implements CvCameraViewListener2
         text_canny_threshold2 = (TextView) findViewById(R.id.textView2);
         text_canny_threshold2.setText(seek_canny_threshold2.getProgress() + " / " + seek_canny_threshold2.getMax());
 
+        canny_threshold1 = seek_canny_threshold1.getProgress(); //inital value from xml default progress
 
         seek_canny_threshold1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -348,6 +350,8 @@ public class Settings extends AppCompatActivity implements CvCameraViewListener2
 
             }
         });
+
+        canny_threshold2 = seek_canny_threshold2.getProgress(); //inital value from xml default progress
         seek_canny_threshold2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
