@@ -258,24 +258,26 @@ public class LaneDetection implements CameraBridgeViewBase.CvCameraViewListener2
         int[] emptyLine = {0,0,0,0};
         int emptyLineCount = 0;
 
+        //just 2 lines
         for (int i = 0; i < avgLeftRightLines.length; i++) {
             int[] line = avgLeftRightLines[i];
 
-            Log.i("leftRight"+"1", Arrays.toString(line));
+            Log.i("leftRight1", Arrays.toString(line));
 
-            if(line == emptyLine){
+            if(Arrays.equals(line, emptyLine)){
                 emptyLineCount++;
+                Log.i("leftRightEmpty", "emptyLineCount = "+emptyLineCount+ "\n");
                 continue;
             }
-
             //red color line
             Imgproc.line(mRgba, new Point(line[0], line[1]), new Point(line[2], line[3]), new Scalar(255, 0, 0), 3);
         }
 
+        //if we are missing 2 lanes, ALERT
         if (emptyLineCount == 2){
             Intent intent = new Intent("com.example.kwt.accelerometer.onLaneDetectionLost");
             context.sendBroadcast(intent);
-            Log.i("leftRight", "Left Right Lines = 0, Broadcast sent");
+            Log.i("leftRightEmpty", "Left Right Lines = 0, Broadcast sent");
         }
         return mRgba;
     }
